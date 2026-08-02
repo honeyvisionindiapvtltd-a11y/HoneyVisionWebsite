@@ -6,12 +6,12 @@ import cloudinaryMap from "../../utils/cloudinary_map.json";
 import "./Product.css";
 
 const staticProductImages = {
-  "ai-cctv-cameras": [
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632654/aicamera1_xstrh1.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632656/aicamera4_llmrpa.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632655/aicamera2_esrvew.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632654/aicamera5_ke15dm.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632655/aicamera_d9lpga.jpg",
+   "ai-cctv-cameras": [
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669789/WhatsApp_Image_2026-08-02_at_4.51.47_PM_1_gj18mu.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669800/WhatsApp_Image_2026-08-02_at_4.51.46_PM_nrqqxs.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669793/WhatsApp_Image_2026-08-02_at_4.51.47_PM_bsf22n.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669785/WhatsApp_Image_2026-08-02_at_4.51.47_PM_2_lqjufx.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669785/WhatsApp_Image_2026-08-02_at_4.51.47_PM_2_lqjufx.jpg",
     "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632653/aicamera3_b4jkdo.jpg",
   ],
   "ip-camera-systems": [

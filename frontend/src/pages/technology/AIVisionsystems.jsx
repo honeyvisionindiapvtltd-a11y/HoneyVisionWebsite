@@ -464,7 +464,7 @@ const AIVisionsystems = () => {
               {[
                 {
                   title:"AI Camera",
-                  desc:"Capture high-resolution video with embedded AI."
+                  desc:"Capture high-resolution video and detect fire, smoke, and critical threats with embedded AI."
                 },
                 {
                   title:"Edge AI",

@@ -122,7 +122,9 @@ const Contact = () => {
                     </h4>
 
                     <p className="text-gray-300 mt-2">
-                      +91 82700 04040
+                      <a href="tel:+918270004040" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                +91 82700 04040
+              </a>
                     </p>
 
                     <a
@@ -150,7 +152,9 @@ const Contact = () => {
                     </h4>
 
                     <p className="text-gray-300 mt-2">
-                      honeyvisionindiapvtltd@gmail.com
+                       <a href="mailto:contact.honeyvision@gmail.com" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                contact.honeyvision@gmail.com
+              </a>
                     </p>
                   </div>
 

@@ -72,27 +72,27 @@ router.put(
 );
 router.delete("/demo-requests/:requestId", protect, adminOnly, deleteDemoRequest);
 
-// Generic resource endpoints: services, technologies, industries, alerts, media, notifications, activitylogs
+// Generic resource endpoints: services, technologies, industries, alerts, media, notifications, activitylogs, cookie-consents
 router.get(
-  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|team|roles|cms)",
+  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|cookie-consents|team|roles|cms)",
   protect,
   adminOnly,
   listResources
 );
 router.post(
-  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|team|roles|cms)",
+  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|cookie-consents|team|roles|cms)",
   protect,
   adminOnly,
   createResource
 );
 router.put(
-  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|team|roles|cms)/:id",
+  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|cookie-consents|team|roles|cms)/:id",
   protect,
   adminOnly,
   updateResource
 );
 router.delete(
-  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|team|roles|cms)/:id",
+  "/:resource(services|technologies|industries|alerts|media|notifications|activitylogs|reports|analytics|cookie-consents|team|roles|cms)/:id",
   protect,
   adminOnly,
   deleteResource

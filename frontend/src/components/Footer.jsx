@@ -267,8 +267,8 @@ const Footer = () => {
 
               <FaEnvelope className="text-[#24A8E0] mt-1 shrink-0" style={{ fontSize: '1.25rem' }} />
 
-              <a href="mailto:honeyvisionindiapvtltd@gmail.com" className="block text-gray-400 hover:text-[#24A8E0] transition">
-                honeyvisionindiapvtltd@gmail.com
+              <a href="mailto:contact.honeyvision@gmail.com" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                contact.honeyvision@gmail.com
               </a>
 
             </div>

@@ -97,6 +97,13 @@ export const productApi = {
   get: (slug) => request(`/products/${slug}`),
 };
 
+export const cookieConsentApi = {
+  create: (payload) => request("/cookie-consent", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  }),
+};
+
 export const cmsApi = {
   list: () => request("/cms"),
   get: (slug) => request(`/cms/${slug}`),

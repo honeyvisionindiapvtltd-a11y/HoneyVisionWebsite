@@ -8,6 +8,7 @@ import demoRoutes from "./routes/demoRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cmsRoutes from "./routes/cmsRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import cookieRoutes from "./routes/cookieRoutes.js";
 import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
@@ -49,6 +50,7 @@ app.use("/api/demo-requests", demoRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/cms", cmsRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cookie-consent", cookieRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

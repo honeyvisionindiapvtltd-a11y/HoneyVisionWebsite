@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { productApi } from "../../services/api";
+import { productDetails } from "./productData";
 import cloudinaryMap from "../../utils/cloudinary_map.json";
 import "./Product.css";
 
 const staticProductImages = {
   "ai-cctv-cameras": [
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632654/aicamera1_xstrh1.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632656/aicamera4_llmrpa.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632655/aicamera2_esrvew.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632654/aicamera5_ke15dm.jpg",
-    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632655/aicamera_d9lpga.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669789/WhatsApp_Image_2026-08-02_at_4.51.47_PM_1_gj18mu.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669800/WhatsApp_Image_2026-08-02_at_4.51.46_PM_nrqqxs.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669793/WhatsApp_Image_2026-08-02_at_4.51.47_PM_bsf22n.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669785/WhatsApp_Image_2026-08-02_at_4.51.47_PM_2_lqjufx.jpg",
+    "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785669785/WhatsApp_Image_2026-08-02_at_4.51.47_PM_2_lqjufx.jpg",
     "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632653/aicamera3_b4jkdo.jpg",
   ],
   "ip-camera-systems": [
@@ -130,14 +131,21 @@ const ProductDetail = ({ slug: slugProp }) => {
   const galleryImages = getProductGalleryImages(product);
   const selectedImage = galleryImages[selectedImageIndex] || galleryImages[0];
   const subtitle = product.subtitle || product.description?.slice(0, 80) || "Discover product details and features.";
-  const features = Array.isArray(product.features) && product.features.length > 0
-    ? product.features
-    : [
-        "High-quality product imagery",
-        "Secure deployment and monitoring",
-        "AI-enabled analytics",
-        "Enterprise-ready infrastructure",
-      ];
+  const defaultProductMeta = productDetails[slug] || {};
+  const productFeatures = Array.isArray(product.features) ? product.features : [];
+  const fallbackFeatures = Array.isArray(defaultProductMeta.features) ? defaultProductMeta.features : [];
+  const features = Array.from(new Set([
+    ...productFeatures,
+    ...fallbackFeatures,
+  ]));
+  if (features.length === 0) {
+    features.push(
+      "High-quality product imagery",
+      "Secure deployment and monitoring",
+      "AI-enabled analytics",
+      "Enterprise-ready infrastructure"
+    );
+  }
 
   return (
     <section className="min-h-screen bg-[#0b0f15] px-6 py-24 text-white">
@@ -215,9 +223,9 @@ const ProductDetail = ({ slug: slugProp }) => {
             <div>
               <p className="text-sm text-gray-300">Features</p>
               <ul className="mt-3 list-disc list-inside text-gray-300">
-                <li>High-quality product imagery</li>
-                <li>Fast, secure delivery</li>
-                <li>Enterprise-ready configuration</li>
+                {features.slice(0, 3).map((feature, idx) => (
+                  <li key={idx}>{feature}</li>
+                ))}
               </ul>
             </div>
 

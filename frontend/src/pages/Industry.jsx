@@ -32,7 +32,7 @@ const Industry = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-black/15" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(36,168,224,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(241,207,69,0.08),transparent_25%)]" />
 
         {/* Hero */}

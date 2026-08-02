@@ -5,6 +5,7 @@ import Alert from "../models/Alert.js";
 import Media from "../models/Media.js";
 import Notification from "../models/Notification.js";
 import ActivityLog from "../models/ActivityLog.js";
+import CookieConsent from "../models/CookieConsent.js";
 import Report from "../models/Report.js";
 import Metric from "../models/Metric.js";
 import TeamMember from "../models/TeamMember.js";
@@ -32,6 +33,8 @@ export const listResources = async (req, res) => {
         return res.json(await Report.find().sort({ createdAt: -1 }));
       case "analytics":
         return res.json(await Metric.find().sort({ timestamp: -1 }));
+      case "cookie-consents":
+        return res.json(await CookieConsent.find().sort({ acceptedAt: -1 }));
       case "team":
         return res.json(await TeamMember.find().sort({ createdAt: -1 }));
       case "roles":
@@ -68,6 +71,8 @@ export const createResource = async (req, res) => {
         return res.status(201).json(await Report.create(req.body));
       case "analytics":
         return res.status(201).json(await Metric.create(req.body));
+      case "cookie-consents":
+        return res.status(201).json(await CookieConsent.create(req.body));
       case "team":
         return res.status(201).json(await TeamMember.create(req.body));
       case "roles":
@@ -116,6 +121,9 @@ export const updateResource = async (req, res) => {
         break;
       case "analytics":
         model = Metric;
+        break;
+      case "cookie-consents":
+        model = CookieConsent;
         break;
       case "team":
         model = TeamMember;
@@ -170,6 +178,9 @@ export const deleteResource = async (req, res) => {
         break;
       case "analytics":
         model = Metric;
+        break;
+      case "cookie-consents":
+        model = CookieConsent;
         break;
       case "team":
         model = TeamMember;

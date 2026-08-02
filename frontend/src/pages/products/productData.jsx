@@ -21,10 +21,11 @@ export const productDetails = {
     title: "AI CCTV Cameras",
     subtitle: "Advanced camera systems for intelligent video surveillance.",
     overview:
-      "Our AI CCTV cameras combine edge-based analytics, object detection, and smart alerts to help you monitor people, vehicles, and assets in real time.",
+      "Our AI CCTV cameras combine edge-based analytics, object detection, and smart alerts to help you monitor people, vehicles, fire, smoke, and assets in real time.",
     features: [
       "Facial recognition and people counting",
       "Vehicle analytics and license plate detection",
+      "Fire and smoke detection for faster emergency response",
       "Low-light sensing with high-resolution capture",
       "Edge inferencing for faster threat detection",
     ],

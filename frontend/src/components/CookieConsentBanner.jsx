@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { cookieConsentApi } from "../services/api";
 
 const CookieConsentBanner = () => {
   const [visible, setVisible] = useState(false);
@@ -17,9 +19,32 @@ const CookieConsentBanner = () => {
     setVisible(true);
   }, []);
 
-  const setConsent = (value) => {
+  const { user } = useAuth();
+
+  const setConsent = async (value) => {
     document.cookie = `cookieConsent=${value}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
     localStorage.setItem("cookieConsent", value);
+
+    if (value === "accepted") {
+      const payload = {
+        accepted: true,
+        user: user
+          ? {
+              id: user.id || user._id,
+              fullName: user.fullName,
+              email: user.email,
+            }
+          : null,
+        path: window.location.pathname,
+      };
+
+      try {
+        await cookieConsentApi.create(payload);
+      } catch (error) {
+        console.error("Failed to record cookie consent:", error);
+      }
+    }
+
     setVisible(false);
   };
 

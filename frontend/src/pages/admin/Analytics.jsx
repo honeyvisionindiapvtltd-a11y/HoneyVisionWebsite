@@ -6,6 +6,7 @@ const formatKeyLabel = (key) => {
   if (/visitor_count|visitor|traffic|session/i.test(key)) return "Visitor trends";
   if (/active|device|devices/i.test(key)) return "Device activity";
   if (/conversion/i.test(key)) return "Conversion trend";
+  if (/cookie|consent/i.test(key)) return "Cookie consent trend";
   return key.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 };
 
@@ -26,22 +27,31 @@ const buildLinePath = (points, width, height, padding) => {
 
 const Analytics = () => {
   const [metrics, setMetrics] = useState([]);
+  const [cookieConsents, setCookieConsents] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [consentSummary, setConsentSummary] = useState({ total: 0, lastAcceptedAt: null });
 
   useEffect(() => {
     const fetchMetricsAndSummary = async () => {
       setLoading(true);
       setError("");
       try {
-        const [analyticsData, summaryData] = await Promise.all([
+        const [analyticsData, summaryData, cookieConsentsData] = await Promise.all([
           authApi.request("/admin/analytics"),
           authApi.request("/admin/summary"),
+          authApi.request("/admin/cookie-consents"),
         ]);
 
         setMetrics(Array.isArray(analyticsData) ? analyticsData : analyticsData.metrics ?? []);
         setSummary(summaryData.data ?? summaryData);
+        const consents = Array.isArray(cookieConsentsData) ? cookieConsentsData : cookieConsentsData.data ?? [];
+        setCookieConsents(consents);
+        setConsentSummary({
+          total: consents.length,
+          lastAcceptedAt: consents.length ? consents[0].acceptedAt : null,
+        });
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Unable to load analytics data.");
       } finally {
@@ -60,6 +70,24 @@ const Analytics = () => {
       return acc;
     }, {});
 
+    if (cookieConsents.length > 0) {
+      const consentByDay = cookieConsents.reduce((acc, consent) => {
+        const day = new Date(consent.acceptedAt).toISOString().slice(0, 10);
+        acc[day] = (acc[day] || 0) + 1;
+        return acc;
+      }, {});
+
+      groups.cookie_consents = Object.entries(consentByDay)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([day, value]) => ({
+          _id: `cookie_consents_${day}`,
+          key: "cookie_consents",
+          value,
+          timestamp: new Date(`${day}T00:00:00Z`).toISOString(),
+          _source: "cookie_consent_trend",
+        }));
+    }
+
     if (summary && groups && Object.keys(groups).length === 0) {
       groups.visitor_count = [
         {
@@ -73,7 +101,7 @@ const Analytics = () => {
     }
 
     return groups;
-  }, [metrics, summary]);
+  }, [metrics, summary, cookieConsents]);
 
   const metricKeys = Object.keys(groupedMetrics);
 
@@ -109,7 +137,7 @@ const Analytics = () => {
         </div>
 
         <div className="overflow-x-auto rounded-4xl border border-[#24A8E0]/20 bg-[#111015]/90 p-4">
-          <svg viewBox={`0 0 ${width} ${height}`} className="h-[240px] w-full">
+          <svg viewBox={`0 0 ${width} ${height}`} className="h-60 w-full">
             <defs>
               <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#24A8E0" stopOpacity="0.9" />
@@ -199,6 +227,35 @@ const Analytics = () => {
               {renderChart(groupedMetrics[key])}
             </section>
           ))}
+
+          {cookieConsents.length > 0 && (
+            <section className="rounded-4xl border border-[#24A8E0]/20 bg-[#111015]/90 p-6 shadow-lg shadow-black/20">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[3px] text-[#24A8E0]">Cookie Consent</p>
+                  <h3 className="mt-2 text-2xl font-semibold text-white">Users Who Accepted Cookies</h3>
+                  <p className="mt-2 text-sm text-gray-400">Shows recent users who accepted cookies and page-level consent details.</p>
+                </div>
+                <div className="rounded-3xl border border-[#24A8E0]/10 bg-[#0f1118]/80 px-4 py-3 text-right">
+                  <p className="text-xs uppercase tracking-[3px] text-[#24A8E0]">Total Acceptances</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">{consentSummary.total}</p>
+                  {consentSummary.lastAcceptedAt && (
+                    <p className="mt-1 text-xs text-gray-400">Last accepted {new Date(consentSummary.lastAcceptedAt).toLocaleString()}</p>
+                  )}
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {cookieConsents.slice(0, 6).map((consent) => (
+                  <div key={consent._id} className="rounded-3xl border border-[#24A8E0]/10 bg-[#0f1118]/80 p-4">
+                    <p className="text-sm text-[#24A8E0]">{consent.fullName || consent.email || "Anonymous"}</p>
+                    {consent.email && <p className="mt-2 text-sm text-gray-300">{consent.email}</p>}
+                    <p className="mt-2 text-xs text-gray-500">Accepted at {new Date(consent.acceptedAt).toLocaleString()}</p>
+                    <p className="mt-3 text-xs text-gray-400">{consent.path || "Unknown page"}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>

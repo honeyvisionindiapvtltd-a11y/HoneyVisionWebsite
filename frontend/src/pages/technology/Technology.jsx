@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { getCloudinaryImageUrl } from "../../utils/cloudinary";
-import bgImage from "../../assets/bg.jpg";
+import bgImage from "../../assets/bg2.jpg";
 
 const hero1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388281/Cloud_Platform_t3xtgb.jpg");
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388226/Agricultural_AI1_tr3wzu.jpg");

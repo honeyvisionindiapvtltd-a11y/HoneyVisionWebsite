@@ -14,11 +14,12 @@ const productSeed = [
     slug: "ai-cctv-cameras",
     subtitle: "Advanced camera systems for intelligent video surveillance.",
     description:
-      "High-definition AI surveillance cameras with facial recognition, motion detection, vehicle analytics, and intelligent monitoring.",
+      "High-definition AI surveillance cameras with facial recognition, motion detection, vehicle analytics, fire and smoke detection, and intelligent monitoring.",
     price: 14999,
     features: [
       "Facial recognition and people counting",
       "Vehicle analytics and license plate detection",
+      "Fire and smoke detection for faster emergency response",
       "Low-light sensing with high-resolution capture",
       "Edge inferencing for faster threat detection",
     ],
