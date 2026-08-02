@@ -1,0 +1,351 @@
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes shimmerLine {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleX(0.95);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1.04);
+  }
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes entranceFade {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.9s ease forwards;
+}
+
+.animate-floatSlow {
+  animation: floatUpDown 16s ease-in-out infinite;
+}
+
+.animate-shimmerLine {
+  animation: shimmerLine 4s ease-in-out infinite;
+}
+
+.animate-cardFloat {
+  animation: cardFloat 9s ease-in-out infinite;
+}
+
+.animate-appear {
+  opacity: 0;
+  animation: entranceFade 0.9s ease-out forwards;
+}
+
+.animate-spinSlow {
+  animation: spinSlow 24s linear infinite;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+.solutions-page-shell {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .solutions-page-shell {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .solutions-page-shell {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+.solutions-media-grid {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .solutions-media-grid {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .solutions-media-grid {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+  }
+}
+
+.solutions-media-block {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .solutions-media-block {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .solutions-media-block {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+  }
+}
+
+/* Global glowing particles */
+.global-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.global-particles .particle {
+  position: absolute;
+  width: var(--size, 12px);
+  height: var(--size, 12px);
+  left: var(--left, 50%);
+  top: var(--top, 50%);
+  background: var(--color, rgba(36,168,224,0.14));
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: var(--opacity, 0.85);
+  transform: translate3d(0,0,0);
+  will-change: transform, opacity;
+  animation: particleFloat var(--duration, 10s) ease-in-out infinite,
+             particlePulse calc(var(--duration, 10s) * 0.6) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes particleFloat {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  25% { transform: translate3d(8px, -18px, 0) scale(1.04); }
+  50% { transform: translate3d(-6px, -36px, 0) scale(0.98); }
+  75% { transform: translate3d(6px, -18px, 0) scale(1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes particlePulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Smaller performance-friendly shimmer for mobile */
+@media (max-width: 640px) {
+  .global-particles .particle { filter: blur(4px); }
+}
+
+body {
+  background-color: var(--page-bg);
+  color: #f5f7fb;
+}
+
+:root {
+  --page-bg: #014733e6;
+  --page-text: #f5f7fb;
+  --page-muted: #dfe8f4;
+  --page-accent: #8ed8ff;
+  --page-accent-strong: #24A8E0;
+  --page-card: linear-gradient(135deg, rgba(1, 71, 51, 0.96), rgba(1, 50, 35, 0.9));
+  --about-bg-image: url('./assets/aboutbg.jpg');
+  --about-bg-overlay: linear-gradient(135deg, rgba(2, 20, 17, 0.82) 0%, rgba(2, 24, 20, 0.72) 45%, rgba(1, 16, 13, 0.83) 100%);
+}
+
+#root {
+  min-height: 100vh;
+  background-color: transparent;
+}
+
+body,
+.app-shell {
+  background-color: #02120d;
+  background-image: var(--about-bg-overlay), var(--about-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.hero-slider-shell {
+  background-color: #014733e6 !important;
+  background-image: none !important;
+  background-size: auto !important;
+  background-position: initial !important;
+}
+
+/* Replace the old dark blue page fills with the requested green tone */
+body :not(nav)[class*='bg-[#09101c]'],
+body :not(nav)[class*='bg-[#111015]'],
+body :not(nav)[class*='bg-[#111015]/'],
+body :not(nav)[class*='bg-[#0f1118]'],
+body :not(nav)[class*='bg-[#0b0f15]'],
+body :not(nav)[class*='bg-[#09101c]'],
+body :not(nav)[class*='bg-[#05070b]'],
+body :not(nav)[class*='bg-[#0E1117]'],
+body :not(nav)[class*='bg-[#0b1220]'],
+body :not(nav)[class*='bg-[#05070f]'],
+body :not(nav)[class*='bg-[#0f172a]'],
+body :not(nav)[class*='bg-[#014733e6]'],
+body :not(nav)[class*='bg-[#014733e6]/'] {
+  background-color: rgba(2, 20, 18, 0.74) !important;
+  background-image: var(--about-bg-overlay), var(--about-bg-image) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Give cards and panels a softer green-glass treatment */
+body :not(nav)[class*='bg-[#1D416A]'],
+body :not(nav)[class*='bg-[#18263D]'],
+body :not(nav)[class*='bg-[#112035]'],
+body :not(nav)[class*='bg-[#171F2E]'],
+body :not(nav)[class*='bg-[#16181D]'],
+body :not(nav)[class*='bg-[#0f172a]'] {
+  background: var(--page-card) !important;
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Recolor common gradient card backgrounds to match the new green theme */
+body :not(nav)[class*='from-[#0b1220]'],
+body :not(nav)[class*='from-[#111015]'],
+body :not(nav)[class*='from-[#15273C]'],
+body :not(nav)[class*='from-[#18263D]'],
+body :not(nav)[class*='from-[#1D416A]'],
+body :not(nav)[class*='via-[#11253d]'],
+body :not(nav)[class*='via-[#1D416A]'],
+body :not(nav)[class*='via-[#24A8E0]'],
+body :not(nav)[class*='to-[#153163]'],
+body :not(nav)[class*='to-[#111015]'],
+body :not(nav)[class*='to-[#24A8E0]'] {
+  background-image: var(--page-card) !important;
+}
+
+/* Accent buttons and highlighted text */
+body :not(nav)[class*='bg-[#F1CF45]'] {
+  background: linear-gradient(135deg, #2b8d64, var(--page-bg)) !important;
+  color: var(--page-text) !important;
+}
+
+body :not(nav)[class*='text-[#F1CF45]'],
+body :not(nav)[class*='text-[#24A8E0]'] {
+  color: var(--page-accent) !important;
+}
+
+body :not(nav) [class*='text-white'] {
+  color: var(--page-text) !important;
+}
+
+body :not(nav) [class*='text-gray-300'] {
+  color: var(--page-muted) !important;
+}
+
+body :not(nav) [class*='text-gray-100'] {
+  color: #f6f8fc !important;
+}
+
+.route-page-shell {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--page-bg);
+  background-image:
+    linear-gradient(120deg, rgba(1, 27, 20, 0.55), rgba(1, 20, 16, 0.35)),
+    url('../src/assets/dark-bg-2.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+.route-page-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(36, 168, 224, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.10));
+  pointer-events: none;
+}
+
+.route-page-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
