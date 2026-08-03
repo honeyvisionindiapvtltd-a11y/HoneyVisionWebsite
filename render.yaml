@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: honeyvision-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://honeyvision-frontend.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: EMAIL_FROM
+        value: no-reply@honeyvision.in
+
+  - type: static
+    name: honeyvision-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install --include=dev && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://honeyvision-backend.onrender.com/api
