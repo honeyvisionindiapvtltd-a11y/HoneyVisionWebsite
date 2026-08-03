@@ -2,9 +2,9 @@ services:
   - type: web
     name: honeyvision-backend
     env: node
-    rootDir: .
-    buildCommand: npm install --prefix backend
-    startCommand: npm install --prefix backend && npm start --prefix backend
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
     envVars:
       - key: NODE_ENV
         value: production
