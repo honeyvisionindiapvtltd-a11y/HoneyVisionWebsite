@@ -7,7 +7,7 @@ import {
   Send,
   MessageCircle,
 } from "lucide-react";
-const aboutBg = 'https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/aboutbg_poefkw.png';
+import aboutBg from "../assets/aboutbg.jpg";
 import { contactApi, ApiError } from "../services/api";
 
 const Contact = () => {

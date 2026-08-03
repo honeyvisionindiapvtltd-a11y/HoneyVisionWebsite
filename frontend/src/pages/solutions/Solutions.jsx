@@ -1,7 +1,7 @@
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { getCloudinaryImageUrl } from "../../utils/cloudinary";
-const bgImage = "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/bg_z1keoj.png";
+import bgImage from "../../assets/bg.jpg";
 
 const aiSurveillance = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388151/AI_Surveillance1_icjvor.jpg");
 const aiSurveillance1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388147/AI_Surveillance_noduax.jpg");
@@ -183,7 +183,7 @@ const Solutions = () => {
       <div className="overflow-hidden rounded-2xl aspect-video">
         <iframe
           className="w-full h-full"
-          src="https://res.cloudinary.com/q6iqvtbe/video/upload/v1785480395/videoplayback_2_nlwrxs.mp4"
+          src="https://res.cloudinary.com/q6iqvtbe/video/upload/v1785481500/videoplayback_4_cibnql.mp4"
           title="Honey Vision solutions overview"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

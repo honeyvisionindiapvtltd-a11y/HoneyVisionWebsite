@@ -3,12 +3,7 @@ import { getCloudinaryImageUrl } from "../../utils/cloudinary";
 
 const cityMain = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388213/smartcity_rgzaq5.jpg");
 const city1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388217/smartcity1_h2nhr5.jpg");
-const city2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785652148/Intrusion_Detection_pchni7.jpg");
-const city3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785653594/parking_v5tw3w.jpg");
-const city4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785653594/lot_v02giq.jpg");
-const city5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785652147/crowd_monitoring_xqki0y.jpg");
-
-
+const city2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388217/smartcity1_h2nhr5.jpg");
 import {
   TrafficCone,
   Camera,
@@ -24,42 +19,42 @@ const features = [
     title: "Smart Traffic Management",
     description:
       "Monitor traffic flow using AI-powered cameras and optimize signal management.",
-    image: city1,
+    image: cityMain,
   },
   {
     icon: <Camera size={40} />,
     title: "City Surveillance",
     description:
       "24×7 intelligent surveillance for roads, public places, and critical infrastructure.",
-    image: cityMain,
+    image: city1,
   },
   {
     icon: <Car size={40} />,
     title: "Smart Parking",
     description:
       "AI-powered parking detection and occupancy monitoring.",
-    image: city3,
+    image: city2,
   },
   {
     icon: <Bell size={40} />,
     title: "Emergency Alerts",
     description:
       "Instant accident and emergency notifications using AI analytics.",
-    image: city2,
+    image: cityMain,
   },
   {
     icon: <Wifi size={40} />,
     title: "IoT Integration",
     description:
       "Connect cameras, sensors and smart devices into one intelligent platform.",
-    image: city4,
+    image: city1,
   },
   {
     icon: <ShieldCheck size={40} />,
     title: "Public Safety",
     description:
       "Improve citizen safety through AI surveillance and predictive analytics.",
-    image: city5,
+    image: city2,
   },
 ];
 

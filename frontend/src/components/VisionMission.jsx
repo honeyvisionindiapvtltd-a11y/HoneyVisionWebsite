@@ -1,5 +1,5 @@
 import { Eye, Target, Lightbulb, Globe } from "lucide-react";
-const aboutBg = 'https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/aboutbg_poefkw.png';
+import aboutBg from "../assets/aboutbg.jpg";
 
 const VisionMission = () => {
   const sectionStyle = {

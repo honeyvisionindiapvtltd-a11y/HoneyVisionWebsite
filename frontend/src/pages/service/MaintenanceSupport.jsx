@@ -5,11 +5,6 @@ import { getCloudinaryImageUrl } from "../../utils/cloudinary";
 const hero1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388074/maintanance2_vkwbfj.jpg");
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388070/maintanance1_jp3rmv.jpg");
 const hero3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388065/maintanance_kkjdla.jpg");
-const hero4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388147/AI_Surveillance_noduax.jpg");
-const hero5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632661/ipcamera1_yg4hbb.jpg");
-const hero6 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388081/security1_ljfstb.jpg");
-const hero7 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388085/security2_cbd9ra.jpg");
-const hero8 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388096/services2_celqbe.jpg");
 
 import {
   Wrench,
@@ -34,35 +29,35 @@ const features = [
     title: "System Upgrades",
     description:
       "Firmware updates, software upgrades, and configuration optimization for maximum performance.",
-    image: hero4,
+    image: hero2,
   },
   {
     icon: <ShieldCheck size={40} />,
     title: "Security Audits",
     description:
       "Complete inspection of cameras, storage, networking, and security settings to prevent failures.",
-    image: hero7,
+    image: hero3,
   },
   {
     icon: <Clock3 size={40} />,
     title: "24×7 Support",
     description:
       "Fast troubleshooting and remote assistance whenever your surveillance system needs attention.",
-    image: hero3,
+    image: hero1,
   },
   {
     icon: <MonitorSmartphone size={40} />,
     title: "Remote Monitoring",
     description:
       "Continuous monitoring and proactive alerts ensure maximum uptime for your security infrastructure.",
-    image: hero8,
+    image: hero2,
   },
   {
     icon: <Wrench size={40} />,
     title: "Repair Services",
     description:
       "Quick replacement of damaged equipment, cables, storage devices, and surveillance accessories.",
-    image: hero2,
+    image: hero3,
   },
 ];
 

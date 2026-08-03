@@ -222,7 +222,7 @@ body {
   --page-accent: #8ed8ff;
   --page-accent-strong: #24A8E0;
   --page-card: linear-gradient(135deg, rgba(1, 71, 51, 0.96), rgba(1, 50, 35, 0.9));
-  --about-bg-image: url('https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/aboutbg_poefkw.png');
+  --about-bg-image: url('./assets/aboutbg.jpg');
   --about-bg-overlay: linear-gradient(135deg, rgba(2, 20, 17, 0.82) 0%, rgba(2, 24, 20, 0.72) 45%, rgba(1, 16, 13, 0.83) 100%);
 }
 

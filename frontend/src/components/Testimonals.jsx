@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const aboutBg = 'https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/aboutbg_poefkw.png';
+import aboutBg from "../assets/aboutbg.jpg";
 import {
   Star,
   Quote,

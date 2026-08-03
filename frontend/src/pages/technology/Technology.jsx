@@ -1,18 +1,11 @@
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { getCloudinaryImageUrl } from "../../utils/cloudinary";
-const bgImage = "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/bg_z1keoj.png";
+import bgImage from "../../assets/bg2.jpg";
 
 const hero1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388281/Cloud_Platform_t3xtgb.jpg");
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388226/Agricultural_AI1_tr3wzu.jpg");
 const hero3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388260/AI_Computer_Vision1_aykp9x.jpg");
-const hero4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388335/Embedded_Systems3_b2ffst.jpg");
-const hero5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388238/Agricultural_AI4_j8xbv4.jpg");
-const hero6 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785387958/Manufacturing1_gjbesy.jpg");
-const hero7 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388048/AI_Consultation2_rs1ybw.jpg");
-const hero8 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388241/AI_Analytics_nuwqx6.jpg");
-const hero9 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388309/Edge_AI1_go3xqu.jpg");
-
 
 import {
   Cpu,
@@ -32,7 +25,7 @@ const technologies = [
     title: "AI Vision Systems",
     description:
       "High-accuracy computer vision for detection, tracking, recognition, and operational monitoring in real time.",
-    image: hero7,
+    image: hero1,
     route: "/technology/ai-vision-systems",
   },
   {
@@ -40,7 +33,7 @@ const technologies = [
     title: "Radar Technology",
     description:
       "Advanced sensing for perimeter protection, motion detection, and reliable situational awareness in complex environments.",
-    image: hero5,
+    image: hero2,
     route: "/technology/radar-technology",
   },
   {
@@ -48,7 +41,7 @@ const technologies = [
     title: "Storage & Bandwidth Optimization",
     description:
       "Efficient data handling and smart network design that keep video streams, analytics, and alerts dependable.",
-    image: hero8,
+    image: hero3,
     route: "/technology/storage-bandwidth",
   },
   {
@@ -56,7 +49,7 @@ const technologies = [
     title: "Smart Edge Computing",
     description:
       "Local processing power that reduces latency and enables rapid decision-making closer to the source.",
-    image: hero9,
+    image: hero1,
     route: "/technology/smart-edge-computing",
   },
   {
@@ -72,7 +65,7 @@ const technologies = [
     title: "Cloud Connectivity",
     description:
       "Secure remote access, centralized control, and scalable monitoring through modern cloud infrastructure.",
-    image: hero1,
+    image: hero3,
     route: "/technology/cloud-connectivity",
   },
 ];
@@ -99,7 +92,7 @@ const Technology = () => {
     <div className="relative mx-4 sm:mx-8 lg:mx-10 min-h-[700px] overflow-hidden rounded-[32px] border border-[#24A8E0]/20">
 
       <img
-        src={hero7}
+        src={hero1}
         alt="Technology"
         className="absolute inset-0 w-full h-full object-cover"
       />

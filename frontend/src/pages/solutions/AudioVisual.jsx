@@ -4,11 +4,6 @@ import { getCloudinaryImageUrl } from "../../utils/cloudinary";
 const avMain = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388176/audiovideo3_joml6b.jpg");
 const av1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388176/audiovideo3_joml6b.jpg");
 const av2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388172/audiovideo2_lauk9o.jpg");
-const av3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388151/AI_Surveillance1_icjvor.jpg");
-const av4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388180/computervision_zwka3r.jpg");
-const av5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632655/audiovideo2_p1tjsy.jpg");
-const av6 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785632656/audiovideo1_nll5kq.jpg");
-
 import {
   Monitor,
   Presentation,
@@ -31,28 +26,28 @@ const features = [
     title: "Digital Signage",
     description:
       "High-quality digital displays for advertisements, announcements, and public information.",
-    image: av3,
+    image: av1,
   },
   {
     icon: <Video size={40} />,
     title: "Video Conferencing",
     description:
       "Enterprise-grade conferencing with crystal-clear audio and HD video.",
-    image: av6,
+    image: av2,
   },
   {
     icon: <Speaker size={40} />,
     title: "Professional Audio",
     description:
       "Premium sound systems for auditoriums and commercial environments.",
-    image: av3,
+    image: avMain,
   },
   {
     icon: <Mic size={40} />,
     title: "Auditorium Solutions",
     description:
       "Complete AV integration with microphones, projectors and control systems.",
-    image: av5,
+    image: av1,
   },
   {
     icon: <Tv size={40} />,

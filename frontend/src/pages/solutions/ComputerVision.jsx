@@ -4,10 +4,6 @@ import { getCloudinaryImageUrl } from "../../utils/cloudinary";
 const cvMain = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388180/computervision_zwka3r.jpg");
 const cv1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388184/computervision1_lkhecz.jpg");
 const cv2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388186/computervision2_ahvx4s.jpg");
-const cv3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785652147/face_detection_hpqvmq.jpg");
-const cv4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785653594/lot_v02giq.jpg");
-const cv5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785653596/public_saftey_feclll.jpg");
-
 import {
   Brain,
   ScanSearch,
@@ -23,14 +19,14 @@ const features = [
     title: "Object Detection",
     description:
       "Detect and classify people, vehicles, equipment, and other objects in real time using advanced AI models.",
-    image: cv1,
+    image: cvMain,
   },
   {
     icon: <ScanSearch size={40} />,
     title: "Face Recognition",
     description:
       "Identify authorized individuals and improve security using AI-powered facial recognition.",
-    image: cv3,
+    image: cv1,
   },
   {
     icon: <Barcode size={40} />,
@@ -51,7 +47,7 @@ const features = [
     title: "People Counting",
     description:
       "Monitor occupancy and customer movement with intelligent analytics.",
-    image: cv5,
+    image: cv1,
   },
   {
     icon: <Brain size={40} />,

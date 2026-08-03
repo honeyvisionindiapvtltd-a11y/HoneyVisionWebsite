@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import { getCloudinaryImageUrl } from "../utils/cloudinary";
-const bgImage = "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/bg_z1keoj.png";
+import bgImage from "../assets/bg.jpg";
 
 const hero4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785387962/Manufacturing2_mgwaus.jpg");
 const hero6 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785387958/Manufacturing1_gjbesy.jpg");

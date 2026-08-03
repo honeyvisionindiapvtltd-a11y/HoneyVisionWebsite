@@ -1,27 +1,5 @@
 # HoneyVision
 
-## Local development
-
-1. At the repository root, run:
-   ```bash
-   npm install
-   ```
-   This will install the root dependencies and automatically install backend and frontend dependencies.
-2. Start the development servers:
-   ```bash
-   npm run dev
-   ```
-3. Backend will run on `http://localhost:5000` and the frontend will run on `http://localhost:5173`.
-
-## Production build
-
-- Build the frontend from the `frontend` directory with:
-  ```bash
-  npm run build --prefix frontend
-  ```
-- The backend starts with `npm start` from the `backend` directory.
-- Ensure `VITE_API_URL` points to the backend API URL when serving the frontend in production.
-
 ## Deployment notes
 
 ### Render

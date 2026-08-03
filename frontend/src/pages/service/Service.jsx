@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { getCloudinaryImageUrl } from "../../utils/cloudinary";
-const bgImage = "https://res.cloudinary.com/q6iqvtbe/image/upload/v1785692267/bg_z1keoj.png";
+import bgImage from "../../assets/bg.jpg";
 
 const hero1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388062/installation3_iuv7sv.jpg");
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388065/maintanance_kkjdla.jpg");
