@@ -1,4 +1,18 @@
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const resolveApiBase = () => {
+  const configuredUrl = import.meta.env.VITE_API_URL?.trim();
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
+  }
+
+  if (typeof window !== "undefined" && window.location.hostname.includes("localhost")) {
+    return "/api";
+  }
+
+  return "https://honeyvisionwebsite.onrender.com/api";
+};
+
+const API_BASE = resolveApiBase();
 
 class ApiError extends Error {
   constructor(message, status) {
