@@ -71,12 +71,19 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/contact", contactRoutes);
 app.use("/api/demo-requests", demoRoutes);
+app.use("/demo-requests", demoRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 app.use("/api/cms", cmsRoutes);
+app.use("/cms", cmsRoutes);
 app.use("/api/products", productRoutes);
+app.use("/products", productRoutes);
 app.use("/api/cookie-consent", cookieRoutes);
+app.use("/cookie-consent", cookieRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

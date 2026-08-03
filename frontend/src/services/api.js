@@ -2,7 +2,13 @@ const resolveApiBase = () => {
   const configuredUrl = import.meta.env.VITE_API_URL?.trim();
 
   if (configuredUrl) {
-    return configuredUrl.replace(/\/$/, "");
+    const normalized = configuredUrl.replace(/\/$/, "");
+
+    if (normalized.endsWith("/api")) {
+      return normalized;
+    }
+
+    return `${normalized}/api`;
   }
 
   if (typeof window !== "undefined" && window.location.hostname.includes("localhost")) {
