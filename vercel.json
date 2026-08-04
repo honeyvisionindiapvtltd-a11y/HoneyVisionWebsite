@@ -1,7 +1,27 @@
 {
-  "version": 3,
-  "build": {
-    "command": "npm install --prefix frontend --include=dev && npm run build --prefix frontend",
-    "outputDirectory": "frontend/dist"
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist",
+        "buildCommand": "npm run build --prefix frontend"
+      }
+    },
+    {
+      "src": "api/index.mjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.mjs"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }

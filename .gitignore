@@ -9,3 +9,6 @@ frontend/.env
 *.log
 .DS_Store
 coverage/
+
+.vercel
+.env*
