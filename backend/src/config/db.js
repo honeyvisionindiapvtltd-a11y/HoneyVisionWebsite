@@ -15,11 +15,12 @@ const redactMongoUri = (uri) => {
 
 const connectDB = async () => {
   const isProduction = process.env.NODE_ENV === "production";
-  const configuredUri = process.env.MONGODB_URI || (isProduction ? null : DEFAULT_URI);
+  const configuredUri = process.env.MONGODB_URI || (!isProduction ? DEFAULT_URI : null);
 
   if (!configuredUri) {
-    console.error("MongoDB is not configured for production. Set MONGODB_URI in the GoDaddy environment.");
-    return false;
+    const message = "MONGODB_URI is required in production. Set the Atlas connection string in the deployment environment.";
+    console.error(message);
+    throw new Error(message);
   }
 
   try {
@@ -30,7 +31,8 @@ const connectDB = async () => {
     console.log(`MongoDB connected using ${redactMongoUri(configuredUri)}`);
     return true;
   } catch (error) {
-    console.error("MongoDB connection error:", error.message);
+    const message = `MongoDB connection error: ${error.message}`;
+    console.error(message);
     if (isProduction) {
       throw error;
     }

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
@@ -10,61 +11,55 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cmsRoutes from "./routes/cmsRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cookieRoutes from "./routes/cookieRoutes.js";
-import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
-
+const isProduction = process.env.NODE_ENV === "production";
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
   "https://honeyvision.in",
   "https://www.honeyvision.in",
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
+  ...(isProduction ? [] : ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"]),
 ].filter(Boolean);
 
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const hostname = (() => {
+      try {
+        return new URL(origin).hostname.toLowerCase();
+      } catch {
+        return origin.toLowerCase();
+      }
+    })();
+
+    const allowed =
+      allowedOrigins.includes(origin) ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "honeyvision.in" ||
+      hostname === "www.honeyvision.in";
+
+    if (allowed) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Origin not allowed by CORS."));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 const app = express();
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      const hostname = (() => {
-        try {
-          return new URL(origin).hostname.toLowerCase();
-        } catch {
-          return origin.toLowerCase();
-        }
-      })();
-
-      const isAllowedHost =
-        allowedOrigins.includes(origin) ||
-        hostname === "localhost" ||
-        hostname === "127.0.0.1" ||
-        hostname === "honeyvision.in" ||
-        hostname === "www.honeyvision.in" ||
-        hostname.endsWith(".honeyvision.in");
-
-      if (isAllowedHost) {
-        callback(null, true);
-        return;
-      }
-
-      callback(null, false);
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Cookie"],
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -83,9 +78,23 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/health", (req, res) => {
-  res.json({
+  const databaseConnected = mongoose.connection.readyState === 1;
+
+  if (!databaseConnected && isProduction) {
+    return res.status(503).json({
+      success: false,
+      service: "HoneyVision API",
+      database: "disconnected",
+      environment: process.env.NODE_ENV || "development",
+      message: "Database connection unavailable.",
+    });
+  }
+
+  return res.status(200).json({
     success: true,
-    message: "Honey Vision API is running",
+    service: "HoneyVision API",
+    database: databaseConnected ? "connected" : "development-mode",
+    environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
   });
 });
