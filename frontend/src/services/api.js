@@ -11,11 +11,11 @@ const resolveApiBase = () => {
     return `${normalized}/api`;
   }
 
-  if (typeof window !== "undefined" && window.location.hostname.includes("localhost")) {
+  if (typeof window !== "undefined") {
     return "/api";
   }
 
-  return "https://honeyvisionwebsite.onrender.com/api";
+  return "/api";
 };
 
 const API_BASE = resolveApiBase();

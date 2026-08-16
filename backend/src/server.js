@@ -1,118 +1,21 @@
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
+import app from "./app.js";
 import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import contactRoutes from "./routes/contactRoutes.js";
-import demoRoutes from "./routes/demoRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import cmsRoutes from "./routes/cmsRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import cookieRoutes from "./routes/cookieRoutes.js";
 import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
-import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
-const app = express();
-const requestedPort = Number(process.env.PORT || 5000);
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "https://honeyvisionwebsite.vercel.app",
-  "https://honeyvisionwebsite.onrender.com",
-  "https://www.honeyvision.in",
-  "https://honeyvision.in",
-].filter(Boolean);
+const PORT = Number(process.env.PORT || 5000);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app") || origin.includes("localhost")) {
-        callback(null, true);
-        return;
-      }
-
-      callback(null, false);
-    },
-    credentials: true,
-  })
-);
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  const cookieHeader = req.headers.cookie || "";
-  const authCookie = cookieHeader
-    .split(";")
-    .map((item) => item.trim())
-    .find((item) => item.startsWith("authToken="));
-
-  if (authCookie) {
-    req.headers.authorization = `Bearer ${decodeURIComponent(authCookie.split("=")[1])}`;
-  }
-
-  next();
-});
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Honey Vision API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get("/health", (req, res) => {
-  res.json({ success: true, message: "ok" });
-});
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "Honey Vision API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.use("/api/auth", authRoutes);
-app.use("/auth", authRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/contact", contactRoutes);
-app.use("/api/demo-requests", demoRoutes);
-app.use("/demo-requests", demoRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/admin", adminRoutes);
-app.use("/api/cms", cmsRoutes);
-app.use("/cms", cmsRoutes);
-app.use("/api/products", productRoutes);
-app.use("/products", productRoutes);
-app.use("/api/cookie-consent", cookieRoutes);
-app.use("/cookie-consent", cookieRoutes);
-
-app.use(notFound);
-app.use(errorHandler);
-
-const startServer = async (port = requestedPort) => {
+const startServer = async () => {
   await connectDB();
   await seedInitialProductsIfEmpty();
 
-  const server = app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-
-  server.on("error", (error) => {
-    if (error.code === "EADDRINUSE") {
-      if (port === requestedPort) {
-        console.warn(`Port ${port} is already in use. Trying ${port + 1} instead.`);
-        startServer(port + 1);
-        return;
-      }
-
-      console.error(`Port ${port} is already in use. Stop the other process or set a different PORT in your .env file.`);
-      process.exit(1);
-    } else {
-      console.error(error);
-      process.exit(1);
-    }
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
   });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});
