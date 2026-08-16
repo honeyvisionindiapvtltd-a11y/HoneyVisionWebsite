@@ -15,32 +15,28 @@ const redactMongoUri = (uri) => {
 
 const connectDB = async () => {
   const isProduction = process.env.NODE_ENV === "production";
-  const candidateUris = process.env.MONGODB_URI ? [process.env.MONGODB_URI] : isProduction ? [] : [DEFAULT_URI];
+  const configuredUri = process.env.MONGODB_URI || (isProduction ? null : DEFAULT_URI);
 
-  if (candidateUris.length === 0) {
+  if (!configuredUri) {
     console.error("MongoDB is not configured for production. Set MONGODB_URI in the GoDaddy environment.");
     return false;
   }
 
-  let lastError = null;
-
-  for (const uri of candidateUris) {
-    try {
-      await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 5000,
-        family: 4,
-      });
-      console.log(`MongoDB connected using ${redactMongoUri(uri)}`);
-      return true;
-    } catch (error) {
-      lastError = error;
-      console.warn(`MongoDB connection failed for ${redactMongoUri(uri)}: ${error.message}`);
+  try {
+    await mongoose.connect(configuredUri, {
+      serverSelectionTimeoutMS: 5000,
+      family: 4,
+    });
+    console.log(`MongoDB connected using ${redactMongoUri(configuredUri)}`);
+    return true;
+  } catch (error) {
+    console.error("MongoDB connection error:", error.message);
+    if (isProduction) {
+      throw error;
     }
+    console.warn("Continuing without a database connection because this is a development environment.");
+    return false;
   }
-
-  console.error("MongoDB connection error:", lastError?.message || "Unknown error");
-  console.warn("Continuing without a database connection so the server can still start.");
-  return false;
 };
 
 export default connectDB;

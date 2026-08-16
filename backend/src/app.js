@@ -19,14 +19,12 @@ const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  "https://honeyvision.in",
+  "https://www.honeyvision.in",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-  "https://honeyvisionwebsite.vercel.app",
-  "https://honeyvisionwebsite.onrender.com",
-  "https://www.honeyvision.in",
-  "https://honeyvision.in",
 ].filter(Boolean);
 
 const app = express();
@@ -53,11 +51,7 @@ app.use(
         hostname === "127.0.0.1" ||
         hostname === "honeyvision.in" ||
         hostname === "www.honeyvision.in" ||
-        hostname.endsWith(".honeyvision.in") ||
-        hostname.endsWith(".vercel.app") ||
-        hostname.endsWith(".onrender.com") ||
-        hostname.includes("localhost") ||
-        hostname.includes("preview");
+        hostname.endsWith(".honeyvision.in");
 
       if (isAllowedHost) {
         callback(null, true);
@@ -86,10 +80,6 @@ app.use((req, res, next) => {
   }
 
   next();
-});
-
-app.get("/health", (req, res) => {
-  res.json({ success: true, message: "ok" });
 });
 
 app.get("/api/health", (req, res) => {

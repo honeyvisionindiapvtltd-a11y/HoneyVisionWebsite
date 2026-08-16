@@ -133,7 +133,9 @@ export const forgotPassword = async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendUrl =
+      process.env.FRONTEND_URL ||
+      (process.env.NODE_ENV === "production" ? "https://honeyvision.in" : "http://localhost:5173");
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     const emailSubject = "Honeyvision Password Reset Request";

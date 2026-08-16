@@ -4,15 +4,15 @@ const resolveApiBase = () => {
   if (configuredUrl) {
     const normalized = configuredUrl.replace(/\/$/, "");
 
+    if (import.meta.env.PROD) {
+      return "/api";
+    }
+
     if (normalized.endsWith("/api")) {
       return normalized;
     }
 
     return `${normalized}/api`;
-  }
-
-  if (typeof window !== "undefined") {
-    return "/api";
   }
 
   return "/api";
@@ -42,6 +42,7 @@ const request = async (endpoint, options = {}) => {
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
+    credentials: "include",
     headers,
   });
 

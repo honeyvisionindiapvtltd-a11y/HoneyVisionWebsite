@@ -12,9 +12,9 @@
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
     "install:all": "npm install --prefix backend --cache .npm-cache --include=dev && npm install --prefix frontend --cache .npm-cache --include=dev",
-    "start": "npm run start:backend",
-    "start:backend": "npm start --prefix backend",
     "build": "npm run build --prefix frontend",
+    "start": "npm run build && npm run start:backend",
+    "start:backend": "npm start --prefix backend",
     "build:godaddy": "npm run build",
     "deploy:godaddy": "npm run build:godaddy"
   },
