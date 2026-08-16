@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../models/Product.js";
 
 const allowedSlugs = [
@@ -103,6 +104,11 @@ const productSeed = [
 ];
 
 export const seedInitialProductsIfEmpty = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    console.warn("Database not connected; skipping product seed.");
+    return;
+  }
+
   const count = await Product.countDocuments();
   if (count > 0) {
     console.log(`Product seed skipped: ${count} product(s) already exist.`);
