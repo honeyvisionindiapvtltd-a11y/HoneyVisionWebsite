@@ -52,17 +52,11 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const publicRoutes = ["/", "/login", "/register", "/forgotpassword", "/reset-password"];
 
 const AuthGate = () => {
-  const { isAuthenticated, loading } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { loading } = useAuth();
 
   useEffect(() => {
-    if (loading || isAuthenticated) return;
-
-    if (!publicRoutes.includes(location.pathname)) {
-      navigate("/", { replace: true });
-    }
-  }, [loading, isAuthenticated, location.pathname, navigate]);
+    if (loading) return;
+  }, [loading]);
 
   return null;
 };

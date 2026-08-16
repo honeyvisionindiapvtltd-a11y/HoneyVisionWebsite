@@ -21,6 +21,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
   "https://honeyvisionwebsite.vercel.app",
   "https://honeyvisionwebsite.onrender.com",
   "https://www.honeyvision.in",
@@ -32,7 +34,32 @@ const app = express();
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app") || origin.includes("localhost")) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const hostname = (() => {
+        try {
+          return new URL(origin).hostname.toLowerCase();
+        } catch {
+          return origin.toLowerCase();
+        }
+      })();
+
+      const isAllowedHost =
+        allowedOrigins.includes(origin) ||
+        hostname === "localhost" ||
+        hostname === "127.0.0.1" ||
+        hostname === "honeyvision.in" ||
+        hostname === "www.honeyvision.in" ||
+        hostname.endsWith(".honeyvision.in") ||
+        hostname.endsWith(".vercel.app") ||
+        hostname.endsWith(".onrender.com") ||
+        hostname.includes("localhost") ||
+        hostname.includes("preview");
+
+      if (isAllowedHost) {
         callback(null, true);
         return;
       }
@@ -40,6 +67,8 @@ app.use(
       callback(null, false);
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Cookie"],
   })
 );
 
