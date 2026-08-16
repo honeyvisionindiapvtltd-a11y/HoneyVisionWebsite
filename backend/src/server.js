@@ -1,9 +1,10 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
@@ -15,12 +16,43 @@ import cookieRoutes from "./routes/cookieRoutes.js";
 import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
-const app = express();
-const requestedPort = Number(process.env.PORT || 5000);
+dotenv.config();
 
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PORT = Number(process.env.PORT) || 20011;
+const HOST = "0.0.0.0";
+const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
+const frontendIndexPath = path.join(frontendDistPath, "index.html");
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.APP_URL,
+  process.env.DOMAIN_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://honeyvisionwebsite.vercel.app",
+  "https://honeyvisionwebsite.onrender.com",
+  "https://yourdomain.com",
+  "https://www.yourdomain.com",
+].filter(Boolean);
+
+app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app") || origin.includes("localhost") || origin.includes("127.0.0.1")) {
+        callback(null, true);
+        return;
+      }
+
+      if (process.env.NODE_ENV !== "production" && /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
@@ -41,54 +73,80 @@ app.use((req, res, next) => {
 
   next();
 });
+
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
-    message: "HoneyVision API is running",
+    message: "HoneyVision backend is running",
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
     timestamp: new Date().toISOString(),
   });
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
-app.use("/contact", contactRoutes);
 app.use("/api/demo-requests", demoRoutes);
-app.use("/demo-requests", demoRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/admin", adminRoutes);
 app.use("/api/cms", cmsRoutes);
-app.use("/cms", cmsRoutes);
 app.use("/api/products", productRoutes);
-app.use("/products", productRoutes);
 app.use("/api/cookie-consent", cookieRoutes);
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(frontendIndexPath);
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
 
-const startServer = async (port = basePort) => {
-  await connectDB();
-  await seedInitialProductsIfEmpty();
+let httpServer;
 
-  const server = app.listen(port, "0.0.0.0", () => {
-    console.log(`Environment: ${process.env.NODE_ENV || "production"}`);
-    console.log(`Server started on port ${port}`);
-  });
+const shutdown = async (signal) => {
+  console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
-  server.on("error", (error) => {
-    if (error.code === "EADDRINUSE") {
-      const nextPort = port + 1;
-      console.warn(`Port ${port} is already in use. Retrying on port ${nextPort}.`);
-      startServer(nextPort);
-      return;
-    }
+  if (httpServer) {
+    httpServer.close(() => {
+      console.log("HTTP server closed.");
+    });
+  }
 
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  });
+  try {
+    await mongoose.disconnect();
+    console.log("MongoDB disconnected.");
+  } catch (error) {
+    console.error("Error while disconnecting MongoDB:", error.message);
+  }
+
+  process.exit(0);
 };
 
-startServer().catch((error) => {
-  console.error("Failed to start server:", error);
-  process.exit(1);
-});
+const startServer = async () => {
+  try {
+    console.log("Loading environment...");
+    console.log("Connecting to MongoDB...");
+
+    await connectDB();
+    await seedInitialProductsIfEmpty();
+
+    httpServer = app.listen(PORT, HOST, () => {
+      console.log(`Environment: ${process.env.NODE_ENV || "production"}`);
+      console.log(`Server running on ${HOST}:${PORT}`);
+    });
+
+    httpServer.on("error", (error) => {
+      console.error("Failed to start server:", error);
+      process.exit(1);
+    });
+
+    process.on("SIGINT", () => shutdown("SIGINT"));
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

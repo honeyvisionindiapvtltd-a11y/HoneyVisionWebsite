@@ -7,6 +7,10 @@ const connectDB = async () => {
   const uniqueUris = [...new Set(candidateUris)];
   let lastError = null;
 
+  if (!uniqueUris.length) {
+    throw new Error("MongoDB connection error: No MongoDB URI found in environment variables.");
+  }
+
   for (const uri of uniqueUris) {
     try {
       await mongoose.connect(uri, {
@@ -17,13 +21,13 @@ const connectDB = async () => {
       return true;
     } catch (error) {
       lastError = error;
-      console.warn(`MongoDB connection failed: ${error.message}`);
+      const safeUri = uri.replace(/\/\/([^@]+)@/, "//***@");
+      console.error(`MongoDB connection failed for URI ${safeUri}: ${error.message}`);
     }
   }
 
-  console.error("MongoDB connection error:", lastError?.message || "Unknown error");
-  console.warn("Continuing without a database connection so the server can still start.");
-  return false;
+  const errorMessage = lastError?.message || "Unknown MongoDB connection error";
+  throw new Error(`MongoDB connection error: ${errorMessage}`);
 };
 
 export default connectDB;
