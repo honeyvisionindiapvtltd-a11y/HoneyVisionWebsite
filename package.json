@@ -2,6 +2,7 @@
   "name": "honeyvision-website",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "backend",
     "frontend"
@@ -10,10 +11,12 @@
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
-    "install:all": "npm install --prefix backend && npm install --prefix frontend --include=dev",
-    "start": "npm install --prefix backend && npm run start:backend",
+    "install:all": "npm install --prefix backend --cache .npm-cache --include=dev && npm install --prefix frontend --cache .npm-cache --include=dev",
+    "start": "npm run start:backend",
     "start:backend": "npm start --prefix backend",
-    "build": "npm install --prefix frontend --include=dev && npm run build --prefix frontend"
+    "build": "npm install --prefix frontend --cache .npm-cache --include=dev && npm run build --prefix frontend",
+    "build:godaddy": "npm run build && node scripts/prepareGodaddyDeploy.js",
+    "deploy:godaddy": "npm run build:godaddy"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

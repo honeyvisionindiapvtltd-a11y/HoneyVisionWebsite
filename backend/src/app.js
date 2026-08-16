@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
@@ -9,6 +12,10 @@ import productRoutes from "./routes/productRoutes.js";
 import cookieRoutes from "./routes/cookieRoutes.js";
 import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
@@ -86,6 +93,14 @@ app.use("/api/products", productRoutes);
 app.use("/products", productRoutes);
 app.use("/api/cookie-consent", cookieRoutes);
 app.use("/cookie-consent", cookieRoutes);
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+
+  app.get(/^(?!\/api\/|\/api$|\/auth\/|\/auth$|\/contact\/|\/contact$|\/demo-requests\/|\/demo-requests$|\/admin\/|\/admin$|\/cms\/|\/cms$|\/products\/|\/products$|\/cookie-consent\/|\/cookie-consent$|\/health$|\/health\/$).*/, (req, res) => {
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
