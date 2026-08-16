@@ -59,14 +59,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Honey Vision API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
 app.get("/health", (req, res) => {
   res.json({ success: true, message: "ok" });
 });
@@ -97,9 +89,16 @@ app.use("/cookie-consent", cookieRoutes);
 if (fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
 
-  app.get(/^(?!\/api\/|\/api$|\/auth\/|\/auth$|\/contact\/|\/contact$|\/demo-requests\/|\/demo-requests$|\/admin\/|\/admin$|\/cms\/|\/cms$|\/products\/|\/products$|\/cookie-consent\/|\/cookie-consent$|\/health$|\/health\/$).*/, (req, res) => {
-    res.sendFile(path.join(frontendDistPath, "index.html"));
-  });
+  app.get(
+    /^(?!\/api(?:\/|$)|\/auth(?:\/|$)|\/contact(?:\/|$)|\/demo-requests(?:\/|$)|\/admin(?:\/|$)|\/cms(?:\/|$)|\/products(?:\/|$)|\/cookie-consent(?:\/|$)|\/health(?:\/|$)).*/,
+    (req, res, next) => {
+      if (req.method !== "GET") {
+        return next();
+      }
+
+      return res.sendFile(path.join(frontendDistPath, "index.html"));
+    }
+  );
 }
 
 app.use(notFound);

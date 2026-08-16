@@ -14,8 +14,8 @@
     "install:all": "npm install --prefix backend --cache .npm-cache --include=dev && npm install --prefix frontend --cache .npm-cache --include=dev",
     "start": "npm run start:backend",
     "start:backend": "npm start --prefix backend",
-    "build": "npm install --prefix frontend --cache .npm-cache --include=dev && npm run build --prefix frontend",
-    "build:godaddy": "npm run build && node scripts/prepareGodaddyDeploy.js",
+    "build": "npm run build --prefix frontend",
+    "build:godaddy": "npm run build",
     "deploy:godaddy": "npm run build:godaddy"
   },
   "devDependencies": {
