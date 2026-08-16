@@ -2,20 +2,10 @@ const resolveApiBase = () => {
   const configuredUrl = import.meta.env.VITE_API_URL?.trim();
 
   if (configuredUrl) {
-    const normalized = configuredUrl.replace(/\/$/, "");
-
-    if (normalized.endsWith("/api")) {
-      return normalized;
-    }
-
-    return `${normalized}/api`;
+    return configuredUrl.replace(/\/$/, "");
   }
 
-  if (typeof window !== "undefined" && window.location.hostname.includes("localhost")) {
-    return "/api";
-  }
-
-  return "https://honeyvisionwebsite.onrender.com/api";
+  return "/api";
 };
 
 const API_BASE = resolveApiBase();

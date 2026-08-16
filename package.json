@@ -7,14 +7,11 @@
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
     "install:all": "npm install --prefix backend && npm install --prefix frontend --include=dev",
-    "start": "npm install --prefix backend && npm run start:backend",
-    "start:backend": "npm start --prefix backend",
-    "build": "npm install --prefix frontend --include=dev && npm run build --prefix frontend"
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "node backend/src/server.js",
+    "start:backend": "node backend/src/server.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
-  },
-  "dependencies": {
-    "cloudinary": "^2.10.0"
   }
 }

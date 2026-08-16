@@ -1,4 +1,7 @@
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -14,25 +17,13 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 const app = express();
 const requestedPort = Number(process.env.PORT || 5000);
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "https://honeyvisionwebsite.vercel.app",
-  "https://honeyvisionwebsite.onrender.com",
-].filter(Boolean);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app") || origin.includes("localhost")) {
-        callback(null, true);
-        return;
-      }
-
-      callback(null, false);
-    },
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
   })
 );
 app.use(express.json({ limit: "10mb" }));
@@ -50,22 +41,10 @@ app.use((req, res, next) => {
 
   next();
 });
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Honey Vision API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get("/health", (req, res) => {
-  res.json({ success: true, message: "ok" });
-});
-
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
-    message: "Honey Vision API is running",
+    message: "HoneyVision API is running",
     timestamp: new Date().toISOString(),
   });
 });
@@ -83,34 +62,33 @@ app.use("/cms", cmsRoutes);
 app.use("/api/products", productRoutes);
 app.use("/products", productRoutes);
 app.use("/api/cookie-consent", cookieRoutes);
-app.use("/cookie-consent", cookieRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
 
-const startServer = async (port = requestedPort) => {
+const startServer = async (port = basePort) => {
   await connectDB();
   await seedInitialProductsIfEmpty();
 
-  const server = app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  const server = app.listen(port, "0.0.0.0", () => {
+    console.log(`Environment: ${process.env.NODE_ENV || "production"}`);
+    console.log(`Server started on port ${port}`);
   });
 
   server.on("error", (error) => {
     if (error.code === "EADDRINUSE") {
-      if (port === requestedPort) {
-        console.warn(`Port ${port} is already in use. Trying ${port + 1} instead.`);
-        startServer(port + 1);
-        return;
-      }
-
-      console.error(`Port ${port} is already in use. Stop the other process or set a different PORT in your .env file.`);
-      process.exit(1);
-    } else {
-      console.error(error);
-      process.exit(1);
+      const nextPort = port + 1;
+      console.warn(`Port ${port} is already in use. Retrying on port ${nextPort}.`);
+      startServer(nextPort);
+      return;
     }
+
+    console.error("Failed to start server:", error);
+    process.exit(1);
   });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});
