@@ -3,30 +3,28 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 
-const PORT = Number(process.env.PORT || 20011);
+const PORT = process.env.PORT || 20011;
 
 const startServer = async (port = PORT) => {
   try {
     const dbConnected = await connectDB();
 
-    if (process.env.NODE_ENV === "production" && !dbConnected) {
-      throw new Error("Production server cannot start without a successful MongoDB connection.");
+    if (!dbConnected) {
+      throw new Error("MongoDB connection failed. Server startup aborted.");
     }
 
-    if (dbConnected) {
-      await seedInitialProductsIfEmpty();
-    }
+    await seedInitialProductsIfEmpty();
 
     const server = app.listen(port, "0.0.0.0", () => {
-      console.log(`Server running on http://0.0.0.0:${port}`);
-      console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log("MongoDB connected successfully");
+      console.log(`Server running successfully on http://0.0.0.0:${port}`);
     });
 
     server.on("error", async (error) => {
       if (error.code === "EADDRINUSE") {
-        const fallbackPort = port + 1;
+        const fallbackPort = Number(port) + 1;
         console.warn(`Port ${port} is already in use. Trying ${fallbackPort} instead.`);
-        await startServer(fallbackPort);
+        await startServer(String(fallbackPort));
         return;
       }
 
