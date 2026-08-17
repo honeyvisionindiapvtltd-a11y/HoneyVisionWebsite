@@ -37,7 +37,7 @@ const developmentOrigins = [
   "http://127.0.0.1:3000",
 ];
 
-// GoDaddy/Airoapp preview origins (temporary for deployment testing)
+const honeyvisionHostnamePattern = /^([a-z0-9-]+\.)*honeyvision\.in$/i;
 const airoappHostnamePattern = /^([a-z0-9-]+\.)*(preview\.)?c\d+\.airoapp\.ai$/i;
 
 const configuredOriginValues = [
@@ -73,7 +73,10 @@ const corsOptions = {
     try {
       const hostname = new URL(origin).hostname;
 
-      if (airoappHostnamePattern.test(hostname)) {
+      if (
+        honeyvisionHostnamePattern.test(hostname) ||
+        airoappHostnamePattern.test(hostname)
+      ) {
         return callback(null, true);
       }
     } catch {
