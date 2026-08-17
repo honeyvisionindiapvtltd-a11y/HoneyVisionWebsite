@@ -32,7 +32,7 @@ const BackToTop = () => {
       } transition-all duration-300`}
     >
       <a
-        href="https://wa.me/918270004040?text=Hello%20Honey%20Vision%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services."
+        href="https://wa.me/919777941117?text=Hello%20Honey%20Vision%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services."
         target="_blank"
         rel="noreferrer"
         className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl shadow-black/30 transition hover:bg-[#1da851]"

@@ -18,8 +18,6 @@ const Profile = () => {
     navigate("/login");
   };
 
-  if (!user) return null;
-
   return (
     <section className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(36,168,224,0.16),_transparent_35%),linear-gradient(135deg,_#0f1118,_#111015_55%,_#161722)] px-6 py-24 flex items-center justify-center text-white">
       <div className="w-full max-w-6xl rounded-[32px] border border-[#927223]/50 bg-[#111015]/90 p-8 shadow-2xl backdrop-blur-xl">

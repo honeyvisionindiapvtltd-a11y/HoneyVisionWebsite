@@ -11,7 +11,7 @@ import aboutBg from "../assets/aboutbg.jpg";
 import { contactApi, ApiError } from "../services/api";
 
 const Contact = () => {
-  const whatsappNumber = "918270004040";
+  const whatsappNumber = "919777941117";
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello Honey Vision, I would like to know more about your services.")}`;
 
   const [form, setForm] = useState({
@@ -122,8 +122,8 @@ const Contact = () => {
                     </h4>
 
                     <p className="text-gray-300 mt-2">
-                      <a href="tel:+918270004040" className="block text-gray-400 hover:text-[#24A8E0] transition">
-                +91 82700 04040
+                      <a href="tel:+919777941117" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                +91 97779 41117
               </a>
                     </p>
 

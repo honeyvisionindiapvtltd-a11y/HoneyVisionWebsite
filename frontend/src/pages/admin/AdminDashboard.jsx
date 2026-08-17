@@ -166,17 +166,6 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="min-h-screen bg-[#111015] flex items-center justify-center text-white px-4">
-        <div className="max-w-md rounded-3xl border border-[#24A8E0]/30 bg-[#111015]/95 p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white">Access denied</h2>
-          <p className="mt-3 text-gray-300">Admin dashboard is available only to administrators.</p>
-        </div>
-      </div>
-    );
-  }
-
   const sidebarItemClass = (section) =>
     `flex w-full items-center justify-start gap-3 rounded-3xl px-4 py-3 text-left text-sm font-medium transition ${
       activeSection === section
@@ -189,6 +178,17 @@ const AdminDashboard = () => {
     setGlobalSearchResults(null);
     setHeaderSearch("");
   };
+
+  if (!user || user.role !== "admin") {
+    return (
+      <div className="min-h-screen bg-[#111015] flex items-center justify-center text-white px-4">
+        <div className="max-w-md rounded-3xl border border-[#24A8E0]/30 bg-[#111015]/95 p-8 shadow-2xl">
+          <h2 className="text-2xl font-bold text-white">Access denied</h2>
+          <p className="mt-3 text-gray-300">Admin dashboard is available only to administrators.</p>
+        </div>
+      </div>
+    );
+  }
 
   const dashboardQuickLinks = [
     { label: "Users", value: summary?.userCount ?? 0, icon: Users, section: "Users", subtitle: "Manage registered users" },

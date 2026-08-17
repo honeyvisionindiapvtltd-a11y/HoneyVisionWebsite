@@ -242,8 +242,8 @@ const Footer = () => {
 
               <FaPhoneAlt className="text-[#24A8E0] mt-1 shrink-0" style={{ fontSize: '1.25rem' }} />
 
-              <a href="tel:+918270004040" className="block text-gray-400 hover:text-[#24A8E0] transition">
-                +91 82700 04040
+              <a href="tel:+919777941117" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                +91 97779 41117
               </a>
 
             </div>
@@ -253,7 +253,7 @@ const Footer = () => {
               <FaWhatsapp className="w-8 h-8 text-[#25D366] mt-1 shrink-0 p-1 rounded-full border border-white/10" aria-hidden />
 
               <a
-                href="https://wa.me/918270004040?text=Hello%20Honey%20Vision%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services."
+                href="https://wa.me/919777941117?text=Hello%20Honey%20Vision%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services."
                 target="_blank"
                 rel="noreferrer"
                 className="block text-gray-400 hover:text-[#25D366] transition"

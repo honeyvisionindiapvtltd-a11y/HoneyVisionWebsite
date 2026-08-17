@@ -153,7 +153,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/cms" element={<CMSIndex />} />
             <Route path="/cms/:slug" element={<CMSPage />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute requireAdmin={true}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/changepassword" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
             <Route path="/editprofile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
