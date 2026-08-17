@@ -37,8 +37,8 @@ const developmentOrigins = [
   "http://127.0.0.1:3000",
 ];
 
-// GoDaddy preview origins (temporary for deployment testing)
-const previewHostnamePattern = /^([a-z0-9-]+\.)*preview\.c\d+\.airoapp\.ai$/i;
+// GoDaddy/Airoapp preview origins (temporary for deployment testing)
+const airoappHostnamePattern = /^([a-z0-9-]+\.)*(preview\.)?c\d+\.airoapp\.ai$/i;
 
 const configuredOriginValues = [
   process.env.FRONTEND_URL,
@@ -73,7 +73,7 @@ const corsOptions = {
     try {
       const hostname = new URL(origin).hostname;
 
-      if (previewHostnamePattern.test(hostname)) {
+      if (airoappHostnamePattern.test(hostname)) {
         return callback(null, true);
       }
     } catch {
