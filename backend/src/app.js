@@ -38,9 +38,7 @@ const developmentOrigins = [
 ];
 
 // GoDaddy preview origins (temporary for deployment testing)
-const godaddyOrigins = [
-  /\.preview\.c\d+\.airoapp\.ai$/,  // Matches GoDaddy preview URLs
-];
+const previewHostnamePattern = /^([a-z0-9-]+\.)*preview\.c\d+\.airoapp\.ai$/i;
 
 const configuredOriginValues = [
   process.env.FRONTEND_URL,
@@ -72,11 +70,14 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    // Check regex patterns (for GoDaddy preview URLs)
-    for (const pattern of godaddyOrigins) {
-      if (pattern.test(origin)) {
+    try {
+      const hostname = new URL(origin).hostname;
+
+      if (previewHostnamePattern.test(hostname)) {
         return callback(null, true);
       }
+    } catch {
+      // Ignore invalid origin URLs and fail closed below.
     }
 
     console.warn("Blocked CORS origin:", origin);
