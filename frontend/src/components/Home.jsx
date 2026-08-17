@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import AuthPromptModal from "./AuthPromptModal";
 import {
   ChevronLeft,
   ChevronRight,
@@ -164,7 +162,6 @@ const slides = assetImages.map((image, index) => ({
 
 const Home = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState(0);
 
   // Auto Slide
