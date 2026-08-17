@@ -167,32 +167,36 @@ app.use((req, res, next) => {
    HEALTH CHECK
 ========================= */
 
-app.get("/api/health", (req, res) => {
-  const databaseConnected =
-    mongoose.connection.readyState === 1;
+const healthResponse = (res) => {
+  const databaseConnected = mongoose.connection.readyState === 1;
 
   if (!databaseConnected && isProduction) {
     return res.status(503).json({
+      status: "ok",
       success: false,
       service: "HoneyVision API",
       database: "disconnected",
-      environment:
-        process.env.NODE_ENV || "development",
-      message:
-        "Database connection unavailable.",
+      environment: process.env.NODE_ENV || "development",
+      message: "Database connection unavailable.",
     });
   }
 
   return res.status(200).json({
+    status: "ok",
     success: true,
     service: "HoneyVision API",
-    database: databaseConnected
-      ? "connected"
-      : "development-mode",
-    environment:
-      process.env.NODE_ENV || "development",
+    database: databaseConnected ? "connected" : "development-mode",
+    environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
   });
+};
+
+app.get("/health", (req, res) => {
+  return healthResponse(res);
+});
+
+app.get("/api/health", (req, res) => {
+  return healthResponse(res);
 });
 
 /* =========================

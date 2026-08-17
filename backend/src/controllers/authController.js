@@ -1,15 +1,35 @@
 import crypto from "crypto";
+import mongoose from "mongoose";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../utils/email.js";
 
+const isDatabaseUnavailable = (error) => {
+  const code = error?.code || error?.cause?.code;
+  const name = error?.name || error?.cause?.name;
+  return (
+    mongoose.connection.readyState !== 1 ||
+    name === "MongooseServerSelectionError" ||
+    code === "EACCES" ||
+    code === "ECONNREFUSED" ||
+    code === "ECONNRESET"
+  );
+};
+
 export const register = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const { fullName, email, phone, company, password } = req.body;
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "An account with this email already exists.",
       });
@@ -32,12 +52,26 @@ export const register = async (req, res, next) => {
       user: user.toPublicJSON(),
     });
   } catch (error) {
+    if (isDatabaseUnavailable(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     next(error);
   }
 };
 
 export const login = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
@@ -58,6 +92,13 @@ export const login = async (req, res, next) => {
       user: user.toPublicJSON(),
     });
   } catch (error) {
+    if (isDatabaseUnavailable(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     next(error);
   }
 };
