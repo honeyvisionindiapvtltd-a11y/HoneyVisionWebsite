@@ -240,10 +240,15 @@ if (fs.existsSync(frontendDistPath)) {
     frontendDistPath
   );
 
+  // Serve static files from frontend dist
   app.use(
-    express.static(frontendDistPath)
+    express.static(frontendDistPath, {
+      maxAge: "1d",
+      etag: false,
+    })
   );
 
+  // SPA fallback: serve index.html for all non-API routes
   app.get(
     /^(?!\/api(?:\/|$)|\/auth(?:\/|$)|\/contact(?:\/|$)|\/demo-requests(?:\/|$)|\/admin(?:\/|$)|\/cms(?:\/|$)|\/products(?:\/|$)|\/cookie-consent(?:\/|$)|\/health(?:\/|$)).*/,
     (req, res, next) => {
@@ -251,12 +256,27 @@ if (fs.existsSync(frontendDistPath)) {
         return next();
       }
 
-      return res.sendFile(
-        path.join(
-          frontendDistPath,
-          "index.html"
-        )
-      );
+      const indexPath = path.join(frontendDistPath, "index.html");
+
+      // Check if index.html exists before trying to send it
+      if (!fs.existsSync(indexPath)) {
+        console.error("SPA fallback: index.html not found at", indexPath);
+        return res.status(404).json({
+          success: false,
+          message: "Frontend not available",
+        });
+      }
+
+      // Send index.html with error handling
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error("Error sending index.html:", err.message);
+          return res.status(500).json({
+            success: false,
+            message: "Error loading frontend",
+          });
+        }
+      });
     }
   );
 } else {
