@@ -37,6 +37,11 @@ const developmentOrigins = [
   "http://127.0.0.1:3000",
 ];
 
+// GoDaddy preview origins (temporary for deployment testing)
+const godaddyOrigins = [
+  /\.preview\.c\d+\.airoapp\.ai$/,  // Matches GoDaddy preview URLs
+];
+
 const configuredOriginValues = [
   process.env.FRONTEND_URL,
   process.env.CORS_ORIGIN,
@@ -62,8 +67,16 @@ const corsOptions = {
       return callback(null, true);
     }
 
+    // Check string origins
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
+    }
+
+    // Check regex patterns (for GoDaddy preview URLs)
+    for (const pattern of godaddyOrigins) {
+      if (pattern.test(origin)) {
+        return callback(null, true);
+      }
     }
 
     console.warn("Blocked CORS origin:", origin);

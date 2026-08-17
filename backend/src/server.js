@@ -12,6 +12,7 @@ let mongoDBConnected = false;
  * Print startup diagnostics without exposing credentials
  */
 const printStartupDiagnostics = () => {
+  console.log("");
   console.log("========================================");
   console.log("APPLICATION STARTUP DIAGNOSTICS");
   console.log("========================================");
@@ -29,6 +30,7 @@ const printStartupDiagnostics = () => {
     }
   }
   console.log("========================================");
+  console.log("");
 };
 
 /**
@@ -41,7 +43,12 @@ const connectToMongoDB = async (attempt = 1, maxAttempts = 10) => {
   }
 
   try {
-    console.log(`[MongoDB] Connection attempt ${attempt}/${maxAttempts}...`);
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    if (!isProduction || attempt === 1) {
+      console.log(`[MongoDB] Connection attempt ${attempt}/${maxAttempts}...`);
+    }
+    
     await connectDB();
     mongoDBConnected = true;
     console.log("✅ MongoDB connected successfully");
@@ -55,12 +62,18 @@ const connectToMongoDB = async (attempt = 1, maxAttempts = 10) => {
     
     return true;
   } catch (error) {
-    console.error(`❌ MongoDB connection attempt ${attempt} failed:`, error.message);
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    if (!isProduction) {
+      console.error(`❌ MongoDB connection attempt ${attempt} failed:`, error.message);
+    } else if (attempt === 1 || attempt % 3 === 0) {
+      // In production, log every 3rd attempt to reduce noise
+      console.error(`❌ MongoDB attempt ${attempt}/${maxAttempts} failed (retrying...)`);
+    }
     
     // Don't retry indefinitely
     if (attempt < maxAttempts) {
       const delayMs = Math.min(5000 * attempt, 30000); // 5s, 10s, 15s... up to 30s
-      console.log(`[MongoDB] Retrying in ${delayMs}ms...`);
       
       setTimeout(() => {
         connectToMongoDB(attempt + 1, maxAttempts);
@@ -84,13 +97,15 @@ const startServer = async (port = PORT) => {
 
     // Start HTTP server immediately (don't wait for MongoDB)
     const server = app.listen(port, "0.0.0.0", () => {
-      console.log("========================================");
-      console.log("✅ HTTP SERVER STARTED");
-      console.log("========================================");
-      console.log(`Server running on port ${port}`);
-      console.log(`HTTP server listening on 0.0.0.0:${port}`);
-      console.log("Attempting MongoDB connection...");
-      console.log("========================================");
+      console.log("");
+      console.log("✅✅✅ HTTP SERVER STARTED ✅✅✅");
+      console.log("");
+      console.log(`Server running on 0.0.0.0:${port}`);
+      console.log(`Frontend: http://localhost:${port}`);
+      console.log(`API: http://localhost:${port}/api/health`);
+      console.log("");
+      console.log("Attempting MongoDB connection in background...");
+      console.log("");
     });
 
     // Handle server errors (e.g., port already in use)
