@@ -1,54 +1,16 @@
-<IfModule mod_rewrite.c>
-  # Enable Rewrite Engine
-  RewriteEngine On
+RewriteEngine On
 
-  # Do not apply rewrite rules if the file exists
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-
-  # Do not rewrite API requests (in case a proxy is configured)
-  RewriteRule ^api/ - [L]
-
-  # Do not rewrite requests for specific file types/paths
-  RewriteRule ^(assets|public|\.well-known)/ - [L]
-  RewriteRule \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map)$ - [L]
-
-  # Rewrite all other requests to index.html for React Router
-  RewriteRule ^ index.html [L]
-</IfModule>
-
-# Set proper MIME types
-<IfModule mod_mime.c>
-  AddType application/javascript js mjs
-  AddType text/css css
-  AddEncoding gzip svgz
-  AddType image/svg+xml svg svgz
-</IfModule>
-
-# Add caching headers for assets
-<IfModule mod_expires.c>
-  ExpiresActive On
-  
-  # HTML - no cache (React routing might update)
-  ExpiresByType text/html "access plus 0 seconds"
-  
-  # Assets - long cache (Vite produces hash-based names)
-  ExpiresByType text/css "access plus 1 year"
-  ExpiresByType application/javascript "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType font/woff "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-</IfModule>
-
-# Add compression
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html
-  AddOutputFilterByType DEFLATE text/css
-  AddOutputFilterByType DEFLATE text/javascript
-  AddOutputFilterByType DEFLATE application/javascript
-  AddOutputFilterByType DEFLATE application/json
-  AddOutputFilterByType DEFLATE image/svg+xml
-</IfModule>
+# Serve index.html for client-side routes, but not for API paths.
+RewriteCond %{REQUEST_URI} !^/api/ [NC]
+RewriteCond %{REQUEST_URI} !^/auth/ [NC]
+RewriteCond %{REQUEST_URI} !^/contact/ [NC]
+RewriteCond %{REQUEST_URI} !^/demo-requests/ [NC]
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/cms/ [NC]
+RewriteCond %{REQUEST_URI} !^/products/ [NC]
+RewriteCond %{REQUEST_URI} !^/cookie-consent/ [NC]
+RewriteCond %{REQUEST_URI} !^/diagnostics/ [NC]
+RewriteCond %{REQUEST_URI} !^/health [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
