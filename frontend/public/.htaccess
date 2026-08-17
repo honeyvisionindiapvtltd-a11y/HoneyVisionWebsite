@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Serve index.html for client-side routes, but not for API paths.
+RewriteCond %{REQUEST_URI} !^/api/ [NC]
+RewriteCond %{REQUEST_URI} !^/auth/ [NC]
+RewriteCond %{REQUEST_URI} !^/contact/ [NC]
+RewriteCond %{REQUEST_URI} !^/demo-requests/ [NC]
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/cms/ [NC]
+RewriteCond %{REQUEST_URI} !^/products/ [NC]
+RewriteCond %{REQUEST_URI} !^/cookie-consent/ [NC]
+RewriteCond %{REQUEST_URI} !^/diagnostics/ [NC]
+RewriteCond %{REQUEST_URI} !^/health [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
