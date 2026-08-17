@@ -1,21 +1,17 @@
 const resolveApiBase = () => {
   const configuredUrl = import.meta.env.VITE_API_URL?.trim();
 
-  if (configuredUrl) {
-    const normalized = configuredUrl.replace(/\/$/, "");
-
-    if (import.meta.env.PROD) {
-      return "/api";
-    }
-
-    if (normalized.endsWith("/api")) {
-      return normalized;
-    }
-
-    return `${normalized}/api`;
+  if (!configuredUrl || configuredUrl === "/api") {
+    return "/api";
   }
 
-  return "/api";
+  const normalized = configuredUrl.replace(/\/$/, "");
+
+  if (normalized.endsWith("/api")) {
+    return normalized;
+  }
+
+  return `${normalized}/api`;
 };
 
 const API_BASE = resolveApiBase();

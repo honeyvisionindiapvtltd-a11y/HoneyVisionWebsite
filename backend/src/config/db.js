@@ -96,49 +96,44 @@ const logTopologyDetails = (error) => {
 
 const connectDB = async () => {
   const configuredUri = process.env.MONGODB_URI;
-  const isProduction = process.env.NODE_ENV === "production";
 
   console.log("========================================");
   console.log("MongoDB startup diagnostics");
   console.log("========================================");
-
   console.log("NODE_ENV:", process.env.NODE_ENV || "<not set>");
+  console.log("MONGODB_URI exists:", Boolean(configuredUri));
 
-  console.log(
-    "MONGODB_URI exists:",
-    Boolean(configuredUri)
-  );
+  if (!configuredUri) {
+    throw new Error("MONGODB_URI is not configured");
+  }
+
+  try {
+    const parsed = new URL(configuredUri);
+    console.log("MongoDB hostname:", parsed.hostname);
+  } catch {
+    console.log("MongoDB hostname: <invalid URI>");
+  }
 
   console.log(
     "MONGODB_URI format:",
-    configuredUri
-      ? configuredUri.startsWith("mongodb+srv://")
-        ? "mongodb+srv://"
-        : configuredUri.startsWith("mongodb://")
-        ? "mongodb://"
-        : "unknown"
-      : "<not set>"
+    configuredUri.startsWith("mongodb+srv://")
+      ? "mongodb+srv://"
+      : configuredUri.startsWith("mongodb://")
+      ? "mongodb://"
+      : "unknown"
   );
 
-  console.log(
-    "MongoDB target:",
-    redactMongoUri(configuredUri)
-  );
-
+  console.log("MongoDB target:", redactMongoUri(configuredUri));
   console.log("========================================");
 
-  if (!configuredUri) {
-    const message = isProduction
-      ? "MONGODB_URI is required in production and was not detected in the deployment environment."
-      : "MONGODB_URI is not defined for this environment.";
-
-    console.error("❌", message);
-
-    throw new Error(message);
+  try {
+    const parsed = new URL(configuredUri);
+    if (parsed.protocol === "mongodb+srv:") {
+      await testMongoDNS(configuredUri);
+    }
+  } catch (error) {
+    console.error("MongoDB URI parsing failed:", error?.message || error);
   }
-
-  // Test DNS/SRV before connecting.
-  await testMongoDNS(configuredUri);
 
   try {
     console.log("========================================");
@@ -146,30 +141,19 @@ const connectDB = async () => {
     console.log("========================================");
 
     await mongoose.connect(configuredUri, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 30000,
-
-      // Force IPv4 in hosted/container environments.
-      family: 4,
-
-      retryWrites: true,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     });
 
     console.log("========================================");
     console.log("✅ MongoDB connected successfully");
-    console.log(
-      "MongoDB target:",
-      redactMongoUri(configuredUri)
-    );
+    console.log("MongoDB target:", redactMongoUri(configuredUri));
     console.log("========================================");
 
     return true;
   } catch (error) {
     console.error("========================================");
     console.error("❌ MONGODB CONNECTION FAILED");
-    console.error("========================================");
-
     console.error("Error name:", error?.name);
     console.error("Error message:", error?.message);
     console.error("Error code:", error?.code);
@@ -180,12 +164,7 @@ const connectDB = async () => {
     }
 
     logTopologyDetails(error);
-
-    console.error(
-      "MongoDB target:",
-      redactMongoUri(configuredUri)
-    );
-
+    console.error("MongoDB target:", redactMongoUri(configuredUri));
     console.error("========================================");
 
     throw error;

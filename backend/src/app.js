@@ -37,9 +37,22 @@ const developmentOrigins = [
   "http://127.0.0.1:3000",
 ];
 
-const allowedOrigins = isProduction
-  ? productionOrigins
-  : [...productionOrigins, ...developmentOrigins];
+const configuredOriginValues = [
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN,
+  process.env.CORS_ORIGINS,
+]
+  .flatMap((value) => {
+    if (!value) return [];
+    return value.split(",").map((item) => item.trim()).filter(Boolean);
+  });
+
+const allowedOrigins = [
+  ...new Set([
+    ...(isProduction ? productionOrigins : [...productionOrigins, ...developmentOrigins]),
+    ...configuredOriginValues,
+  ]),
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
