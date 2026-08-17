@@ -176,6 +176,36 @@ app.get("/api/health", (req, res) => {
 });
 
 /* =========================
+   DATABASE CONNECTION CHECK MIDDLEWARE
+   Returns 503 if MongoDB is not connected in production
+========================= */
+
+app.use((req, res, next) => {
+  // Skip check for health endpoint
+  if (req.path === "/api/health") {
+    return next();
+  }
+
+  // Check if this is an API route that needs database
+  const isApiRoute = req.path.startsWith("/api/") || req.path.startsWith("/auth/") || 
+                     req.path.startsWith("/contact/") || req.path.startsWith("/demo-requests/") ||
+                     req.path.startsWith("/admin/") || req.path.startsWith("/cms/") ||
+                     req.path.startsWith("/products/") || req.path.startsWith("/cookie-consent/");
+
+  const databaseConnected = mongoose.connection.readyState === 1;
+
+  if (isApiRoute && !databaseConnected && isProduction) {
+    return res.status(503).json({
+      success: false,
+      message: "Database connection unavailable. Please try again later.",
+      service: "HoneyVision API",
+    });
+  }
+
+  next();
+});
+
+/* =========================
    API ROUTES
 ========================= */
 

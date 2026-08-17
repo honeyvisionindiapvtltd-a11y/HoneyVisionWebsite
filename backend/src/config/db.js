@@ -97,6 +97,7 @@ const logTopologyDetails = (error) => {
 const connectDB = async () => {
   const configuredUri = process.env.MONGODB_URI;
 
+  // Startup diagnostics
   console.log("========================================");
   console.log("MongoDB startup diagnostics");
   console.log("========================================");
