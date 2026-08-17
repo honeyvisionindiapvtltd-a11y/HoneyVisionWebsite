@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-ro
 import { lazy, Suspense, useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AuthPromptModal from "./components/AuthPromptModal";
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop";
@@ -49,8 +48,6 @@ const CMSPage = lazy(() => import("./pages/CMSPage"));
 const CMSIndex = lazy(() => import("./pages/CMSIndex"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
-const publicRoutes = ["/", "/login", "/register", "/forgotpassword", "/reset-password"];
-
 const AuthGate = () => {
   const { loading } = useAuth();
 
@@ -69,48 +66,6 @@ const ScrollToTop = () => {
   }, [pathname]);
 
   return null;
-};
-
-const EngagementPrompt = () => {
-  const { isAuthenticated, setGuestTimedOut } = useAuth();
-  const [showEngagementPrompt, setShowEngagementPrompt] = useState(false);
-  const [promptShown, setPromptShown] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated || promptShown) return;
-
-    const timer = setTimeout(() => {
-      if (!isAuthenticated && publicRoutes.includes(location.pathname)) {
-        setShowEngagementPrompt(true);
-        setPromptShown(true);
-        // mark that guest has timed out so navigation can be blocked elsewhere
-        setGuestTimedOut(true);
-      }
-    }, 30000);
-
-    return () => clearTimeout(timer);
-  }, [isAuthenticated, promptShown, location.pathname, setGuestTimedOut]);
-
-  return (
-    <AuthPromptModal
-      isOpen={showEngagementPrompt}
-      title="Register to unlock the full experience"
-      description="You are browsing as a guest. Register now to get access to personalized features and stay connected with Honey Vision."
-      primaryText="Login"
-      secondaryText="Register"
-      onPrimary={() => {
-        setShowEngagementPrompt(false);
-        navigate("/login");
-      }}
-      onSecondary={() => {
-        setShowEngagementPrompt(false);
-        navigate("/register");
-      }}
-      onClose={() => setShowEngagementPrompt(false)}
-    />
-  );
 };
 
 function App() {
@@ -146,7 +101,6 @@ function App() {
           <Navbar />
           <ScrollToTop />
           <AuthGate />
-          <EngagementPrompt />
           <Suspense
             fallback={
               <div className="flex min-h-screen items-center justify-center bg-[#09101c] text-white">

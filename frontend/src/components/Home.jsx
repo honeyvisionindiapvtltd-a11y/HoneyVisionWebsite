@@ -166,8 +166,6 @@ const Home = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState(0);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [pendingPath, setPendingPath] = useState("");
 
   // Auto Slide
   useEffect(() => {
@@ -195,13 +193,7 @@ const Home = () => {
   const currentSlide = slides[current];
 
   const handleProtectedAction = (path) => {
-    if (isAuthenticated) {
-      navigate(path);
-      return;
-    }
-
-    setPendingPath(path);
-    setShowAuthPrompt(true);
+    navigate(path);
   };
 
   if (!slides.length) return null;
@@ -363,23 +355,6 @@ const Home = () => {
         </div>
 
       </div>
-
-      <AuthPromptModal
-        isOpen={showAuthPrompt}
-        title="Please sign in to continue"
-        description="This feature requires an account. Would you like to sign in or register now?"
-        primaryText="Login"
-        secondaryText="Register"
-        onPrimary={() => {
-          setShowAuthPrompt(false);
-          navigate("/login", { state: { from: pendingPath } });
-        }}
-        onSecondary={() => {
-          setShowAuthPrompt(false);
-          navigate("/register");
-        }}
-        onClose={() => setShowAuthPrompt(false)}
-      />
 
     </section>
   );

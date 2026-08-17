@@ -12,7 +12,6 @@ import {
 import { getCloudinaryImageUrl } from "../utils/cloudinary";
 
 const logo = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785387607/logo_xhoudq.png");
-import AuthPromptModal from "./AuthPromptModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -21,8 +20,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileDropdown, setMobileDropdown] = useState(null);
   const { isAuthenticated, user, logout } = useAuth();
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [pendingPath, setPendingPath] = useState("");
 
   const isActiveLink = (targetPath, sectionHash = "") => {
     if (targetPath === "/") {
@@ -60,13 +57,7 @@ const Navbar = () => {
 
   const handleProtectedNav = (e, path) => {
     if (e && e.preventDefault) e.preventDefault();
-    if (isAuthenticated) {
-      navigate(path);
-      closeMenu();
-      return;
-    }
-    setPendingPath(path);
-    setShowAuthPrompt(true);
+    navigate(path);
     closeMenu();
   };
 
@@ -117,29 +108,6 @@ const Navbar = () => {
     }
     closeMenu();
   };
-
-  // global capture handler: intercept clicks on internal links when guest has timed out
-  useEffect(() => {
-    const handler = (e) => {
-      const anchor = e.target && e.target.closest && e.target.closest("a");
-      if (!anchor) return;
-      // ensure the clicked anchor is inside this navbar
-      if (!anchor.closest || !anchor.closest("nav")) return;
-      const href = anchor.getAttribute("href");
-      if (!href) return;
-      if (!href.startsWith("/")) return; // only internal routes
-
-      if (!isAuthenticated) {
-        e.preventDefault();
-        setPendingPath(href);
-        setShowAuthPrompt(true);
-        closeMenu();
-      }
-    };
-
-    document.addEventListener("click", handler, true);
-    return () => document.removeEventListener("click", handler, true);
-  }, [isAuthenticated]);
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#111015]/95 backdrop-blur-lg border-b border-[#927223]/30 shadow-lg">
@@ -700,22 +668,6 @@ const Navbar = () => {
 </div>
 
 )}
-      <AuthPromptModal
-        isOpen={showAuthPrompt}
-        title="Please sign in to continue"
-        description="This feature requires an account. Would you like to sign in or register now?"
-        primaryText="Login"
-        secondaryText="Register"
-        onPrimary={() => {
-          setShowAuthPrompt(false);
-          navigate("/login", { state: { from: pendingPath } });
-        }}
-        onSecondary={() => {
-          setShowAuthPrompt(false);
-          navigate("/register");
-        }}
-        onClose={() => setShowAuthPrompt(false)}
-      />
     </nav>
   );
 };
