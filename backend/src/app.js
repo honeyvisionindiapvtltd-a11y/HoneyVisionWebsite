@@ -28,6 +28,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const productionOrigins = [
   "https://honeyvision.in",
   "https://www.honeyvision.in",
+  "https://jbngfatete.preview.c39.airoapp.ai",
 ];
 
 const developmentOrigins = [
@@ -59,15 +60,12 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Requests without Origin header
-    // such as server-to-server requests.
     if (!origin) {
       return callback(null, true);
     }
 
-    // Check string origins
     if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+      return callback(null, origin);
     }
 
     try {
@@ -77,7 +75,7 @@ const corsOptions = {
         honeyvisionHostnamePattern.test(hostname) ||
         airoappHostnamePattern.test(hostname)
       ) {
-        return callback(null, true);
+        return callback(null, origin);
       }
     } catch {
       // Ignore invalid origin URLs and fail closed below.
@@ -89,9 +87,7 @@ const corsOptions = {
       new Error("Origin not allowed by CORS.")
     );
   },
-
   credentials: true,
-
   methods: [
     "GET",
     "POST",
@@ -100,11 +96,11 @@ const corsOptions = {
     "DELETE",
     "OPTIONS",
   ],
-
   allowedHeaders: [
     "Content-Type",
     "Authorization",
   ],
+  optionsSuccessStatus: 204,
 };
 
 const app = express();
@@ -114,8 +110,15 @@ const app = express();
 ========================= */
 
 app.use(cors(corsOptions));
-
 app.options("*", cors(corsOptions));
+
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 /* =========================
    BODY PARSING
@@ -198,12 +201,14 @@ app.get("/api/health", (req, res) => {
 ========================= */
 
 app.use((req, res, next) => {
-  // Skip check for health endpoint
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   if (req.path === "/api/health") {
     return next();
   }
 
-  // Check if this is an API route that needs database
   const isApiRoute = req.path.startsWith("/api/") || req.path.startsWith("/auth/") || 
                      req.path.startsWith("/contact/") || req.path.startsWith("/demo-requests/") ||
                      req.path.startsWith("/admin/") || req.path.startsWith("/cms/") ||
