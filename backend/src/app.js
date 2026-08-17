@@ -12,6 +12,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cmsRoutes from "./routes/cmsRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cookieRoutes from "./routes/cookieRoutes.js";
+import diagnosticsRoutes from "./routes/diagnosticsRoutes.js";
 
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
@@ -209,7 +210,7 @@ app.use((req, res, next) => {
     return next();
   }
 
-  if (req.path === "/api/health") {
+  if (req.path === "/api/health" || req.path.startsWith("/api/diagnostics") || req.path.startsWith("/diagnostics")) {
     return next();
   }
 
@@ -256,6 +257,9 @@ app.use("/products", productRoutes);
 app.use("/api/cookie-consent", cookieRoutes);
 app.use("/cookie-consent", cookieRoutes);
 
+app.use("/api/diagnostics", diagnosticsRoutes);
+app.use("/diagnostics", diagnosticsRoutes);
+
 /* =========================
    FRONTEND STATIC FILES
 ========================= */
@@ -276,7 +280,7 @@ if (fs.existsSync(frontendDistPath)) {
 
   // SPA fallback: serve index.html for all non-API routes
   app.get(
-    /^(?!\/api(?:\/|$)|\/auth(?:\/|$)|\/contact(?:\/|$)|\/demo-requests(?:\/|$)|\/admin(?:\/|$)|\/cms(?:\/|$)|\/products(?:\/|$)|\/cookie-consent(?:\/|$)|\/health(?:\/|$)).*/,
+    /^(?!\/api(?:\/|$)|\/auth(?:\/|$)|\/contact(?:\/|$)|\/demo-requests(?:\/|$)|\/admin(?:\/|$)|\/cms(?:\/|$)|\/products(?:\/|$)|\/cookie-consent(?:\/|$)|\/diagnostics(?:\/|$)|\/health(?:\/|$)).*/,
     (req, res, next) => {
       if (req.method !== "GET") {
         return next();
