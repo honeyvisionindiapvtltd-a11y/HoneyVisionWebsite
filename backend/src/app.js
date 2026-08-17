@@ -28,7 +28,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const productionOrigins = [
   "https://honeyvision.in",
   "https://www.honeyvision.in",
-  "https://jbngfatete.preview.c39.airoapp.ai",
+  "https://jbngfatete.c39.airoapp.ai",
 ];
 
 const developmentOrigins = [
