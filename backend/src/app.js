@@ -29,7 +29,6 @@ const isProduction = process.env.NODE_ENV === "production";
 const productionOrigins = [
   "https://honeyvision.in",
   "https://www.honeyvision.in",
-  "https://jbngfatete.c39.airoapp.ai",
 ];
 
 const developmentOrigins = [
@@ -40,7 +39,6 @@ const developmentOrigins = [
 ];
 
 const honeyvisionHostnamePattern = /^([a-z0-9-]+\.)*honeyvision\.in$/i;
-const airoappHostnamePattern = /^([a-z0-9-]+\.)*(preview\.)?c\d+\.airoapp\.ai$/i;
 
 const configuredOriginValues = [
   process.env.FRONTEND_URL,
@@ -72,10 +70,7 @@ const corsOptions = {
     try {
       const hostname = new URL(origin).hostname;
 
-      if (
-        honeyvisionHostnamePattern.test(hostname) ||
-        airoappHostnamePattern.test(hostname)
-      ) {
+      if (honeyvisionHostnamePattern.test(hostname)) {
         return callback(null, origin);
       }
     } catch {
