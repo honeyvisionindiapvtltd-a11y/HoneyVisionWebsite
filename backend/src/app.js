@@ -3,13 +3,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 // Routes
-import authRoutes from "./routes/auth.js";
-import productRoutes from "./routes/products.js";
-import categoryRoutes from "./routes/categories.js";
-import contactRoutes from "./routes/contact.js";
-import demoRequestRoutes from "./routes/demoRequests.js";
-import cookieConsentRoutes from "./routes/cookieConsent.js";
-import cmsRoutes from "./routes/cms.js";
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
+import demoRequestRoutes from "./routes/demoRoutes.js";
+import cookieConsentRoutes from "./routes/cookieRoutes.js";
+import cmsRoutes from "./routes/cmsRoutes.js";
 
 const app = express();
 
@@ -143,8 +142,6 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 
 app.use("/api/products", productRoutes);
-
-app.use("/api/categories", categoryRoutes);
 
 app.use("/api/contact", contactRoutes);
 
