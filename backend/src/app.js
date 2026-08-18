@@ -1,6 +1,12 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -152,7 +158,23 @@ app.use("/api/cookie-consent", cookieConsentRoutes);
 app.use("/api/cms", cmsRoutes);
 
 /* =========================================================
-   404 HANDLER
+   SERVE FRONTEND STATIC FILES
+   ========================================================= */
+
+const frontendDist = path.join(__dirname, "../../frontend/dist");
+
+console.log("Frontend dist path:", frontendDist);
+
+// Serve static files from frontend/dist
+app.use(express.static(frontendDist));
+
+// SPA fallback: serve index.html for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendDist, "index.html"));
+});
+
+/* =========================================================
+   404 HANDLER (now unreachable, but kept for clarity)
    ========================================================= */
 
 app.use((req, res) => {
