@@ -3,7 +3,7 @@
 // ============================================================
 
 const PRODUCTION_API_URL =
-  "https://honeyvisionwebsite.onrender.com/api";
+  "/api";
 
 const LOCAL_API_URL =
   "http://localhost:5000/api";
