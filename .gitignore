@@ -13,4 +13,3 @@ frontend/.env
 coverage/
 
 .vercel
-.env*
