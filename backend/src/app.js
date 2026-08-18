@@ -136,15 +136,11 @@ app.use((req, res, next) => {
 
 /* =========================================================
    HEALTH CHECK
+   =========================================================
+   Note: Removed GET "/" endpoint to allow frontend static
+   serving and SPA fallback to handle root path.
+   Use "/api/health" for API health checks instead.
    ========================================================= */
-
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "HoneyVision API is running",
-    environment: process.env.NODE_ENV || "development",
-  });
-});
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
