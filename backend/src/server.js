@@ -5,155 +5,286 @@ import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 
-// MongoDB connection state
 let mongoDBConnected = false;
 
-/**
- * Print startup diagnostics without exposing credentials
- */
+/* =========================================================
+   STARTUP DIAGNOSTICS
+========================================================= */
+
 const printStartupDiagnostics = () => {
   console.log("");
   console.log("========================================");
   console.log("APPLICATION STARTUP DIAGNOSTICS");
   console.log("========================================");
-  console.log("NODE_ENV:", process.env.NODE_ENV || "development");
+
+  console.log(
+    "NODE_ENV:",
+    process.env.NODE_ENV || "development"
+  );
+
   console.log("PORT:", PORT);
-  console.log("MONGODB_URI exists:", Boolean(process.env.MONGODB_URI));
-  
+
+  console.log(
+    "MONGODB_URI exists:",
+    Boolean(process.env.MONGODB_URI)
+  );
+
   if (process.env.MONGODB_URI) {
     try {
-      const parsed = new URL(process.env.MONGODB_URI);
-      console.log("MongoDB hostname:", parsed.hostname);
-      console.log("MongoDB database:", parsed.pathname.replace("/", "") || "default");
+      const parsed = new URL(
+        process.env.MONGODB_URI
+      );
+
+      console.log(
+        "MongoDB hostname:",
+        parsed.hostname
+      );
+
+      console.log(
+        "MongoDB database:",
+        parsed.pathname.replace("/", "") ||
+          "default"
+      );
     } catch {
-      console.log("MongoDB URI: <invalid format>");
+      console.log(
+        "MongoDB URI: <invalid format>"
+      );
     }
   }
+
   console.log("========================================");
   console.log("");
 };
 
-/**
- * Attempt MongoDB connection with retry logic
- * Does not crash the process if connection fails
- */
-const connectToMongoDB = async (attempt = 1, maxAttempts = 10) => {
+/* =========================================================
+   MONGODB CONNECTION
+========================================================= */
+
+const connectToMongoDB = async (
+  attempt = 1,
+  maxAttempts = 10
+) => {
   if (mongoDBConnected) {
     return true;
   }
 
   try {
-    const isProduction = process.env.NODE_ENV === "production";
-    
-    if (!isProduction || attempt === 1) {
-      console.log(`[MongoDB] Connection attempt ${attempt}/${maxAttempts}...`);
-    }
-    
+    const isProduction =
+      process.env.NODE_ENV === "production";
+
+    console.log(
+      `[MongoDB] Connection attempt ${attempt}/${maxAttempts}...`
+    );
+
     await connectDB();
+
     mongoDBConnected = true;
-    console.log("✅ MongoDB connected successfully");
-    
-    // Seed products after successful connection
+
+    console.log(
+      "✅ MongoDB connected successfully"
+    );
+
+    /*
+      Seed products only after MongoDB connects.
+    */
     try {
       await seedInitialProductsIfEmpty();
+
+      console.log(
+        "✅ Initial product check completed"
+      );
     } catch (seedError) {
-      console.warn("⚠️  Product seeding skipped:", seedError.message);
+      console.warn(
+        "⚠️ Product seeding skipped:",
+        seedError.message
+      );
     }
-    
+
     return true;
   } catch (error) {
-    const isProduction = process.env.NODE_ENV === "production";
-    
+    const isProduction =
+      process.env.NODE_ENV === "production";
+
     if (!isProduction) {
-      console.error(`❌ MongoDB connection attempt ${attempt} failed:`, error.message);
-    } else if (attempt === 1 || attempt % 3 === 0) {
-      // In production, log every 3rd attempt to reduce noise
-      console.error(`❌ MongoDB attempt ${attempt}/${maxAttempts} failed (retrying...)`);
+      console.error(
+        `❌ MongoDB connection attempt ${attempt} failed:`,
+        error.message
+      );
+    } else if (
+      attempt === 1 ||
+      attempt % 3 === 0
+    ) {
+      console.error(
+        `❌ MongoDB attempt ${attempt}/${maxAttempts} failed:`,
+        error.message
+      );
     }
-    
-    // Don't retry indefinitely
+
     if (attempt < maxAttempts) {
-      const delayMs = Math.min(5000 * attempt, 30000); // 5s, 10s, 15s... up to 30s
-      
+      const delayMs = Math.min(
+        5000 * attempt,
+        30000
+      );
+
+      console.log(
+        `MongoDB retrying in ${delayMs / 1000}s...`
+      );
+
       setTimeout(() => {
-        connectToMongoDB(attempt + 1, maxAttempts);
+        connectToMongoDB(
+          attempt + 1,
+          maxAttempts
+        );
       }, delayMs);
     } else {
-      console.error(`❌ MongoDB: Max connection attempts (${maxAttempts}) reached. Will keep retrying in background.`);
+      console.error(
+        `❌ MongoDB: Max connection attempts (${maxAttempts}) reached.`
+      );
+
+      console.error(
+        "MongoDB will continue retrying in the background."
+      );
     }
-    
+
     return false;
   }
 };
 
-/**
- * Start HTTP server immediately, regardless of MongoDB connection status
- * This ensures GoDaddy's health check passes and app stays alive
- */
-const startServer = async (port = PORT) => {
+/* =========================================================
+   START SERVER
+========================================================= */
+
+const startServer = async () => {
   try {
-    // Print diagnostics before starting
     printStartupDiagnostics();
 
-    // Start HTTP server immediately (don't wait for MongoDB)
-    const server = app.listen(port, "0.0.0.0", () => {
-      console.log("");
-      console.log("✅✅✅ HTTP SERVER STARTED ✅✅✅");
-      console.log("");
-      console.log(`Server running on 0.0.0.0:${port}`);
-      console.log(`Frontend: http://localhost:${port}`);
-      console.log(`API: http://localhost:${port}/api/health`);
-      console.log("");
-      console.log("Attempting MongoDB connection in background...");
-      console.log("");
-    });
+    /*
+      IMPORTANT:
+      Use exactly process.env.PORT on Render/GoDaddy.
+    */
+    const server = app.listen(
+      PORT,
+      "0.0.0.0",
+      () => {
+        console.log("");
+        console.log(
+          "========================================"
+        );
+        console.log(
+          "✅ HTTP SERVER STARTED"
+        );
+        console.log(
+          "========================================"
+        );
 
-    // Handle server errors (e.g., port already in use)
-    server.on("error", async (error) => {
-      if (error.code === "EADDRINUSE") {
-        const fallbackPort = Number(port) + 1;
-        console.warn(`⚠️  Port ${port} is already in use. Trying ${fallbackPort} instead.`);
-        server.close();
-        await startServer(fallbackPort);
-        return;
+        console.log(
+          `Server listening on 0.0.0.0:${PORT}`
+        );
+
+        console.log(
+          `Health: http://localhost:${PORT}/api/health`
+        );
+
+        console.log(
+          `Products: http://localhost:${PORT}/api/products`
+        );
+
+        console.log(
+          "MongoDB connection running in background..."
+        );
+
+        console.log(
+          "========================================"
+        );
+        console.log("");
       }
+    );
 
-      console.error("❌ Server error:", error.message);
+    /* =====================================================
+       SERVER ERROR
+    ===================================================== */
+
+    server.on("error", (error) => {
+      console.error(
+        "❌ Server error:",
+        error
+      );
+
       process.exit(1);
     });
 
-    // Handle graceful shutdown
-    process.on("SIGTERM", () => {
-      console.log("SIGTERM received, shutting down gracefully...");
+    /* =====================================================
+       GRACEFUL SHUTDOWN
+    ===================================================== */
+
+    const shutdown = (signal) => {
+      console.log(
+        `${signal} received, shutting down gracefully...`
+      );
+
       server.close(() => {
-        console.log("Server closed");
+        console.log(
+          "HTTP server closed."
+        );
+
         process.exit(0);
       });
-    });
+    };
 
-    process.on("SIGINT", () => {
-      console.log("SIGINT received, shutting down gracefully...");
-      server.close(() => {
-        console.log("Server closed");
-        process.exit(0);
-      });
-    });
+    process.on(
+      "SIGTERM",
+      () => shutdown("SIGTERM")
+    );
 
-    // Attempt MongoDB connection in the background
-    // This doesn't block server startup
+    process.on(
+      "SIGINT",
+      () => shutdown("SIGINT")
+    );
+
+    /* =====================================================
+       DATABASE CONNECTION
+    ===================================================== */
+
     connectToMongoDB();
 
   } catch (error) {
-    console.error("❌ Failed to start server:", error.message || error);
+    console.error(
+      "❌ Failed to start server:",
+      error.message || error
+    );
+
     process.exit(1);
   }
 };
 
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("⚠️  Unhandled Rejection at:", promise, "reason:", reason);
-  // Don't exit - let the process continue
-});
+/* =========================================================
+   UNHANDLED ERRORS
+========================================================= */
 
-// Start the application
+process.on(
+  "unhandledRejection",
+  (reason) => {
+    console.error(
+      "⚠️ Unhandled Promise Rejection:",
+      reason
+    );
+  }
+);
+
+process.on(
+  "uncaughtException",
+  (error) => {
+    console.error(
+      "❌ Uncaught Exception:",
+      error
+    );
+
+    process.exit(1);
+  }
+);
+
+/* =========================================================
+   START APPLICATION
+========================================================= */
+
 startServer();
