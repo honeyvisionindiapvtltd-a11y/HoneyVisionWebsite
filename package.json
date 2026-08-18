@@ -16,12 +16,14 @@
     "start": "npm run start:backend",
     "start:backend": "npm start --prefix backend",
     "build:godaddy": "npm run build",
-    "deploy:godaddy": "npm run build:godaddy"
+    "deploy:godaddy": "npm run build:godaddy",
+    "start:godaddy": "node godaddy-server.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
   "dependencies": {
-    "cloudinary": "^2.10.0"
+    "cloudinary": "^2.10.0",
+    "express": "^5.2.1"
   }
 }
