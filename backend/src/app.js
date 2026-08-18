@@ -145,10 +145,23 @@ app.use((req, res, next) => {
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "HoneyVision API is healthy",
+    message: "HoneyVision API is running",
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development",
+    environment: process.env.NODE_ENV || "production",
   });
+});
+
+/* =========================================================
+   SERVE FRONTEND ROOT
+   ========================================================= */
+
+const frontendDist = path.join(__dirname, "../../frontend/dist");
+const frontendIndex = path.join(frontendDist, "index.html");
+
+console.log("Frontend dist path:", frontendDist);
+
+app.get("/", (req, res) => {
+  res.sendFile(frontendIndex);
 });
 
 /* =========================================================
@@ -171,16 +184,20 @@ app.use("/api/cms", cmsRoutes);
    SERVE FRONTEND STATIC FILES
    ========================================================= */
 
-const frontendDist = path.join(__dirname, "../../frontend/dist");
-
-console.log("Frontend dist path:", frontendDist);
-
 // Serve static files from frontend/dist
 app.use(express.static(frontendDist));
 
-// SPA fallback: serve index.html for React Router
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendDist, "index.html"));
+// SPA fallback: serve index.html for React Router and other frontend routes.
+app.use((req, res, next) => {
+  if (req.method !== "GET") {
+    return next();
+  }
+
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+
+  return res.sendFile(frontendIndex);
 });
 
 /* =========================================================

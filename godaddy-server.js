@@ -48,15 +48,28 @@ const frontendDist = path.join(process.cwd(), "frontend", "dist");
 
 const serverApp = express();
 
-// Serve static frontend files first
+// Serve static frontend files first.
 serverApp.use(express.static(frontendDist));
 
-// Explicitly serve index.html at root to override any older root JSON endpoints
+// Explicitly serve the frontend app at the site root.
 serverApp.get("/", (req, res) => {
   res.sendFile(path.join(frontendDist, "index.html"));
 });
 
-// Mount backend app for API routes and other middleware
+// Preserve API routes and serve the SPA for all other non-API GET routes.
+serverApp.use((req, res, next) => {
+  if (req.method !== "GET") {
+    return next();
+  }
+
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+
+  return res.sendFile(path.join(frontendDist, "index.html"));
+});
+
+// Mount backend app for API routes and other middleware.
 serverApp.use(app);
 
 // Start server on 0.0.0.0 for GoDaddy compatibility
