@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-DN8ZHr1k.js";import{t}from"./ProductDetail-B7V3k6Kf.js";var n=e(),r=()=>(0,n.jsx)(t,{slug:`audiovisual-systems`});export{r as default};
