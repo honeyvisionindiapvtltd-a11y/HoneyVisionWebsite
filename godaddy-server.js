@@ -1,4 +1,6 @@
 import "dotenv/config";
+import express from "express";
+import path from "path";
 import app from "./backend/src/app.js";
 import connectDB from "./backend/src/config/db.js";
 
@@ -41,8 +43,24 @@ const connectToMongoDB = async (attempt = 1, maxAttempts = 5) => {
   }
 };
 
+// Create a top-level server to ensure '/' serves the SPA in production
+const frontendDist = path.join(process.cwd(), "frontend", "dist");
+
+const serverApp = express();
+
+// Serve static frontend files first
+serverApp.use(express.static(frontendDist));
+
+// Explicitly serve index.html at root to override any older root JSON endpoints
+serverApp.get("/", (req, res) => {
+  res.sendFile(path.join(frontendDist, "index.html"));
+});
+
+// Mount backend app for API routes and other middleware
+serverApp.use(app);
+
 // Start server on 0.0.0.0 for GoDaddy compatibility
-const server = app.listen(PORT, "0.0.0.0", () => {
+const server = serverApp.listen(PORT, "0.0.0.0", () => {
   console.log("");
   console.log("========================================");
   console.log("✅ HTTP SERVER STARTED");
