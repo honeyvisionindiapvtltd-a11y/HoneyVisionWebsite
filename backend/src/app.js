@@ -117,6 +117,20 @@ app.use((req, res, next) => {
     console.log("Origin:", req.headers.origin);
   }
 
+  if (
+    req.query &&
+    typeof req.query.airoShareToken !== "undefined"
+  ) {
+    console.warn(
+      "Blocked Airo share token request:",
+      req.originalUrl
+    );
+    return res.status(403).json({
+      success: false,
+      message: "Blocked by security policy",
+    });
+  }
+
   next();
 });
 
