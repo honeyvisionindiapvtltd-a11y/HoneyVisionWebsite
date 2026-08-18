@@ -1,0 +1,1 @@
+var e=`/assets/bg-CDirZyif.jpg`;export{e as t};
