@@ -5,7 +5,6 @@ import { getCloudinaryImageUrl } from "../../utils/cloudinary";
 
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388277/audio-video-hero_fl8r6m.jpg");
 const hero7 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388273/audio-detection_upc81l.jpg");
-const hero8 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388297/command-center_ekobu5.jpg");
 
 import {
   MonitorSpeaker,

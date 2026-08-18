@@ -1,10 +1,12 @@
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "q6iqvtbe";
 
+// Reserved for future JSON mapping; currently using directImageMap
+// eslint-disable-next-line no-unused-vars
 let cloudinaryMap = {};
 try {
   // eslint-disable-next-line import/no-unresolved
   cloudinaryMap = (await import("./cloudinary_map.json")).default || {};
-} catch (err) {
+} catch {
   // mapping file may not exist yet
   cloudinaryMap = {};
 }

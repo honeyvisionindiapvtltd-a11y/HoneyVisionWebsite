@@ -18,6 +18,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (user) {
+       
       setForm({
         fullName: user.fullName || "",
         phone: user.phone || "",

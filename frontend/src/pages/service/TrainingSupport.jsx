@@ -16,30 +16,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const services = [
-  {
-    icon: <GraduationCap size={40} />,
-    title: "Professional Training",
-    description:
-      "Hands-on training programs for operators, administrators, and security teams to effectively use Honey Vision surveillance solutions.",
-    image: hero1,
-  },
-  {
-    icon: <BookOpen size={40} />,
-    title: "System Workshops",
-    description:
-      "Interactive workshops covering AI surveillance, camera configuration, networking, cloud monitoring, and troubleshooting.",
-    image: hero2,
-  },
-  {
-    icon: <Headphones size={40} />,
-    title: "24×7 Technical Support",
-    description:
-      "Round-the-clock assistance from certified engineers to resolve issues quickly and minimize downtime.",
-    image: hero3,
-  },
-];
-
 const TrainingSupport = () => {
   return (
     <>

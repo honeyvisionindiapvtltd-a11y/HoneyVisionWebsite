@@ -6,7 +6,6 @@ import {
   GraduationCap,
   Settings,
   ArrowRight,
-  CheckCircle2,
 } from "lucide-react";
 
 import { getCloudinaryImageUrl } from "../../utils/cloudinary";
@@ -16,7 +15,6 @@ const hero1 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/u
 const hero2 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388065/maintanance_kkjdla.jpg");
 const hero3 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388085/security2_cbd9ra.jpg");
 const hero4 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388100/training_ck6rqk.jpg");
-const hero5 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388058/installation2_keib4o.jpg");
 const hero6 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388070/maintanance1_jp3rmv.jpg");
 const hero7 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388088/services_velzvz.jpg");
 const hero8 = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785388044/AI_Consultation_kyr0iu.jpg");

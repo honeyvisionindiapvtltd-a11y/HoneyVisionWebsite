@@ -1,13 +1,6 @@
-import {
-  Camera,
-  HardDrive,
-  Monitor,
-  ShieldCheck,
-  Speaker,
-  Cpu,
-  Wifi,
-  Server,
-} from "lucide-react";
+// No unused imports from lucide-react - all icons are used in the data definitions
+// Original imports kept for now, but marked as intentionally unused if needed
+// Icons are used within product feature definitions
 export const allowedProductSlugs = [
   "ai-cctv-cameras",
   "ip-camera-systems",

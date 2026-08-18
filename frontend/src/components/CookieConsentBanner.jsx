@@ -11,12 +11,7 @@ const CookieConsentBanner = () => {
       .find((row) => row.startsWith("cookieConsent="));
     const storedConsent = localStorage.getItem("cookieConsent");
 
-    if (consentCookie || storedConsent) {
-      setVisible(false);
-      return;
-    }
-
-    setVisible(true);
+    setVisible(!(consentCookie || storedConsent));
   }, []);
 
   const { user } = useAuth();

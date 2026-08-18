@@ -10,9 +10,7 @@ import {
   ShieldCheck,
   ClipboardCheck,
   Search,
-  FileText,
   ArrowRight,
-  CheckCircle,
 } from "lucide-react";
 
 const Security = () => {
