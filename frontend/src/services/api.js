@@ -1,12 +1,6 @@
-/**
- * HoneyVision API Configuration
- *
- * Production backend:
- * https://honeyvisionwebsite.onrender.com
- *
- * API:
- * https://honeyvisionwebsite.onrender.com/api
- */
+// ============================================================
+// HoneyVision API Service
+// ============================================================
 
 const PRODUCTION_API_URL =
   "https://honeyvisionwebsite.onrender.com/api";
@@ -14,62 +8,48 @@ const PRODUCTION_API_URL =
 const LOCAL_API_URL =
   "http://localhost:5000/api";
 
-/* =========================================================
-   API BASE URL
-   ========================================================= */
+// ============================================================
+// API BASE URL
+// ============================================================
 
 const getApiBaseUrl = () => {
-  /*
-   * Vite environment variable takes priority.
-   */
   const envUrl = import.meta.env.VITE_API_URL;
 
   if (envUrl && envUrl.trim()) {
     return envUrl.trim().replace(/\/+$/, "");
   }
 
-  /*
-   * Production website
-   */
-  if (window.location.hostname === "honeyvision.in") {
+  const hostname = window.location.hostname;
+
+  if (
+    hostname === "honeyvision.in" ||
+    hostname === "www.honeyvision.in"
+  ) {
     return PRODUCTION_API_URL;
   }
 
-  if (window.location.hostname === "www.honeyvision.in") {
-    return PRODUCTION_API_URL;
-  }
-
-  /*
-   * Local development
-   */
   return LOCAL_API_URL;
 };
 
-const API_BASE_URL = getApiBaseUrl();
+export const API_BASE_URL = getApiBaseUrl();
+
+// ============================================================
+// DEBUG
+// ============================================================
 
 console.log("========================================");
-console.log("HoneyVision API");
+console.log("HoneyVision API Configuration");
 console.log("========================================");
-console.log("API Base URL:", API_BASE_URL);
-console.log("Current Host:", window.location.hostname);
+console.log("API BASE URL:", API_BASE_URL);
+console.log("Current hostname:", window.location.hostname);
+console.log("Environment:", import.meta.env.MODE);
 console.log("========================================");
 
-/* =========================================================
-   TOKEN
-   ========================================================= */
+// ============================================================
+// API ERROR
+// ============================================================
 
-const getToken = () => {
-  return (
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token")
-  );
-};
-
-/* =========================================================
-   API ERROR
-   ========================================================= */
-
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(message, status = 500, data = null) {
     super(message);
 
@@ -79,18 +59,38 @@ class ApiError extends Error {
   }
 }
 
-/* =========================================================
-   MAIN REQUEST FUNCTION
-   ========================================================= */
+// ============================================================
+// TOKEN
+// ============================================================
 
-const request = async (endpoint, options = {}) => {
-  const token = getToken();
+const getToken = () => {
+  try {
+    return (
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token") ||
+      null
+    );
+  } catch (error) {
+    console.warn("Unable to access browser storage:", error);
+    return null;
+  }
+};
 
+// ============================================================
+// REQUEST HELPER
+// ============================================================
+
+export const request = async (
+  endpoint,
+  options = {}
+) => {
   const cleanEndpoint = endpoint.startsWith("/")
     ? endpoint
     : `/${endpoint}`;
 
   const url = `${API_BASE_URL}${cleanEndpoint}`;
+
+  const token = getToken();
 
   const headers = {
     Accept: "application/json",
@@ -98,40 +98,42 @@ const request = async (endpoint, options = {}) => {
     ...(options.headers || {}),
   };
 
-  /*
-   * Add JWT token when available.
-   */
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
   console.log(
-    `[API] ${options.method || "GET"} ${url}`
+    `[HoneyVision API] ${
+      options.method || "GET"
+    } ${url}`
   );
 
   try {
     const response = await fetch(url, {
       ...options,
 
-      /*
-       * Required because backend has:
-       * credentials: true
-       */
+      // Required for backend credentials: true
       credentials: "include",
 
       headers,
     });
 
-    /*
-     * Try to parse JSON.
-     */
-    const data = await response
-      .json()
-      .catch(() => ({}));
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    let data;
+
+    if (contentType.includes("application/json")) {
+      data = await response.json().catch(() => ({}));
+    } else {
+      const text = await response.text().catch(() => "");
+      data = text ? { message: text } : {};
+    }
 
     if (!response.ok) {
       throw new ApiError(
         data?.message ||
+          data?.error ||
           `Request failed with status ${response.status}`,
         response.status,
         data
@@ -141,24 +143,18 @@ const request = async (endpoint, options = {}) => {
     return data;
   } catch (error) {
     console.error("========================================");
-    console.error("API REQUEST FAILED");
+    console.error("HoneyVision API Request Failed");
     console.error("========================================");
     console.error("URL:", url);
     console.error("Error:", error);
     console.error("========================================");
 
-    /*
-     * Preserve our custom ApiError.
-     */
     if (error instanceof ApiError) {
       throw error;
     }
 
-    /*
-     * Network/CORS error.
-     */
     throw new ApiError(
-      "Unable to connect to the server. Please check the backend server and CORS configuration.",
+      "Unable to connect to the HoneyVision backend.",
       0,
       {
         originalError: error,
@@ -168,9 +164,9 @@ const request = async (endpoint, options = {}) => {
   }
 };
 
-/* =========================================================
-   AUTH API
-   ========================================================= */
+// ============================================================
+// AUTH API
+// ============================================================
 
 export const authApi = {
   register: (data) =>
@@ -215,59 +211,26 @@ export const authApi = {
     }),
 };
 
-/* =========================================================
-   PRODUCTS API
-   ========================================================= */
+// ============================================================
+// PRODUCT API
+// ============================================================
 
-export const productsApi = {
-  /*
-   * GET /api/products
-   */
+export const productApi = {
+  // GET /api/products
   list: () =>
     request("/products"),
 
-  /*
-   * GET /api/products/:id
-   */
+  // GET /api/products/:id
   get: (id) =>
     request(`/products/${id}`),
 };
 
-/* =========================================================
-   CATEGORIES API
-   ========================================================= */
+// ============================================================
+// DEMO API
+// ============================================================
 
-export const categoriesApi = {
-  /*
-   * GET /api/categories
-   */
-  list: () =>
-    request("/categories"),
-
-  /*
-   * GET /api/categories/:id
-   */
-  get: (id) =>
-    request(`/categories/${id}`),
-};
-
-/* =========================================================
-   CONTACT API
-   ========================================================= */
-
-export const contactApi = {
-  submit: (data) =>
-    request("/contact", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-};
-
-/* =========================================================
-   DEMO REQUEST API
-   ========================================================= */
-
-export const demoRequestApi = {
+export const demoApi = {
+  // POST /api/demo-requests
   submit: (data) =>
     request("/demo-requests", {
       method: "POST",
@@ -275,11 +238,39 @@ export const demoRequestApi = {
     }),
 };
 
-/* =========================================================
-   COOKIE CONSENT API
-   ========================================================= */
+// ============================================================
+// CONTACT API
+// ============================================================
+
+export const contactApi = {
+  // POST /api/contact
+  submit: (data) =>
+    request("/contact", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+};
+
+// ============================================================
+// CATEGORY API
+// ============================================================
+
+export const categoryApi = {
+  // GET /api/categories
+  list: () =>
+    request("/categories"),
+
+  // GET /api/categories/:id
+  get: (id) =>
+    request(`/categories/${id}`),
+};
+
+// ============================================================
+// COOKIE CONSENT API
+// ============================================================
 
 export const cookieConsentApi = {
+  // POST /api/cookie-consent
   create: (data) =>
     request("/cookie-consent", {
       method: "POST",
@@ -287,37 +278,48 @@ export const cookieConsentApi = {
     }),
 };
 
-/* =========================================================
-   CMS API
-   ========================================================= */
+// ============================================================
+// CMS API
+// ============================================================
 
 export const cmsApi = {
+  // GET /api/cms
   list: () =>
     request("/cms"),
 
+  // GET /api/cms/:id
   get: (id) =>
     request(`/cms/${id}`),
 };
 
-/* =========================================================
-   GENERIC API
-   ========================================================= */
+// ============================================================
+// GENERIC API OBJECT
+// ============================================================
 
 export const api = {
   request,
-};
 
-/* =========================================================
-   DEFAULT EXPORT
-   ========================================================= */
-
-export default {
-  request,
   auth: authApi,
-  products: productsApi,
-  categories: categoriesApi,
+
+  products: productApi,
+
+  product: productApi,
+
+  demo: demoApi,
+
   contact: contactApi,
-  demoRequests: demoRequestApi,
+
+  categories: categoryApi,
+
+  category: categoryApi,
+
   cookieConsent: cookieConsentApi,
+
   cms: cmsApi,
 };
+
+// ============================================================
+// DEFAULT EXPORT
+// ============================================================
+
+export default api;
