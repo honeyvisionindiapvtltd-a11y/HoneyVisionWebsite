@@ -205,8 +205,9 @@ const connectDB = async () => {
     serverSelectionTimeoutMS: 15000,
     connectTimeoutMS: 15000,
 
-    // Prevent mongoose from waiting forever
-    bufferCommands: false,
+    // Queue commands during startup/retries so requests that hit
+    // immediately after boot do not fail with "before initial connection complete".
+    bufferCommands: true,
   });
 
 

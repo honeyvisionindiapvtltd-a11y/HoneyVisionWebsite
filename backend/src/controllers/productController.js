@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import Product from "../models/Product.js";
 
@@ -47,6 +48,13 @@ const normalizeProductImages = async (images = []) => {
 
 export const listProducts = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const products = await Product.find().sort({ createdAt: -1 });
     res.json({ success: true, products });
   } catch (err) {
@@ -56,6 +64,13 @@ export const listProducts = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const { title, slug, description, price, images: imagesInput, published } = req.body;
     const images = await normalizeProductImages(imagesInput);
     const product = await Product.create({ title, slug, description, price, images, published });
@@ -67,6 +82,13 @@ export const createProduct = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const { productId } = req.params;
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ success: false, message: "Product not found." });
@@ -85,6 +107,13 @@ export const updateProduct = async (req, res, next) => {
 
 export const deleteProduct = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+      });
+    }
+
     const { productId } = req.params;
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ success: false, message: "Product not found." });
