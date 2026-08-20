@@ -1,23 +1,7 @@
-const PRODUCTION_API_URL = "/api";
-
 const resolveApiBase = () => {
   const configuredUrl = import.meta.env.VITE_API_URL?.trim();
 
-  // Production custom domain: same-origin backend
-  if (
-    window.location.hostname === "honeyvision.in" ||
-    window.location.hostname === "www.honeyvision.in"
-  ) {
-    return PRODUCTION_API_URL;
-  }
-
-  // Vercel/preview deployments should also prefer same-origin API
-  // when the backend is hosted under the same app origin.
-  if (window.location.hostname.endsWith(".vercel.app")) {
-    return "/api";
-  }
-
-  // Local development / configured environment
+  // Use the configured backend in production and same-origin API locally.
   if (!configuredUrl || configuredUrl === "/api") {
     return "/api";
   }
