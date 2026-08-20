@@ -1,175 +1,301 @@
 import mongoose from "mongoose";
 import dns from "node:dns/promises";
 
+let connectionPromise = null;
+
+/* =========================================================
+   REDACT MONGODB URI
+========================================================= */
+
 const redactMongoUri = (uri) => {
   if (!uri) return "<not set>";
 
   try {
     const parsed = new URL(uri);
 
-    return `${parsed.protocol}//${
-      parsed.username ? "***:***@" : ""
-    }${parsed.host}${parsed.pathname || ""}`;
+    const auth =
+      parsed.username || parsed.password
+        ? "***:***@"
+        : "";
+
+    return `${parsed.protocol}//${auth}${parsed.host}${parsed.pathname || ""}`;
   } catch {
     return uri.replace(/:([^@]+)@/, ":***@");
   }
 };
 
+
+/* =========================================================
+   TEST SRV DNS
+========================================================= */
+
 const testMongoDNS = async (uri) => {
   try {
     const parsed = new URL(uri);
+
+    if (parsed.protocol !== "mongodb+srv:") {
+      console.log(
+        "MongoDB uses mongodb:// URI; SRV DNS test skipped."
+      );
+      return;
+    }
+
     const hostname = parsed.hostname;
 
-    console.log("MongoDB hostname:", hostname);
+    console.log(
+      "Testing MongoDB SRV DNS:",
+      hostname
+    );
 
-    if (parsed.protocol === "mongodb+srv:") {
-      console.log("Testing MongoDB SRV DNS...");
+    const srvRecords = await dns.resolveSrv(
+      `_mongodb._tcp.${hostname}`
+    );
 
-      const srvRecords = await dns.resolveSrv(
-        `_mongodb._tcp.${hostname}`
-      );
+    console.log(
+      "✅ MongoDB SRV DNS resolved successfully"
+    );
 
-      console.log("✅ MongoDB SRV DNS resolved successfully");
-      console.log(
-        "MongoDB SRV records:",
-        srvRecords.map((record) => ({
-          name: record.name,
-          port: record.port,
-          priority: record.priority,
-          weight: record.weight,
-        }))
-      );
-    } else {
-      console.log(
-        "MongoDB connection uses standard mongodb:// URI; SRV test skipped."
-      );
-    }
+    console.log(
+      "MongoDB SRV records:",
+      srvRecords.map((record) => ({
+        name: record.name,
+        port: record.port,
+      }))
+    );
+
   } catch (error) {
-    console.error("❌ MongoDB DNS/SRV test failed");
-    console.error("DNS error name:", error?.name);
-    console.error("DNS error message:", error?.message);
-    console.error("DNS error code:", error?.code);
+    console.error(
+      "❌ MongoDB SRV DNS test failed:",
+      error.message
+    );
   }
 };
 
-const logTopologyDetails = (error) => {
-  if (!error?.reason) {
-    console.error("No MongoDB topology details available.");
-    return;
-  }
 
-  const topology = error.reason;
+/* =========================================================
+   MONGOOSE CONNECTION EVENT LOGGING
+========================================================= */
 
-  console.error("---------- MongoDB Topology ----------");
-  console.error("Topology type:", topology.type);
-  console.error("Set name:", topology.setName);
-  console.error("Common wire version:", topology.commonWireVersion);
-  console.error(
-    "Logical session timeout:",
-    topology.logicalSessionTimeoutMinutes
+mongoose.connection.on("connected", () => {
+  console.log(
+    "🟢 Mongoose connection event: connected"
   );
-  console.error("Heartbeat frequency:", topology.heartbeatFrequencyMS);
-  console.error("Local threshold:", topology.localThresholdMS);
+});
 
-  if (topology.servers) {
-    console.error("---------- MongoDB Servers ----------");
+mongoose.connection.on("disconnected", () => {
+  console.error(
+    "🔴 Mongoose connection event: disconnected"
+  );
+});
 
-    for (const [host, server] of topology.servers.entries()) {
-      console.error("HOST:", host);
-      console.error("  Type:", server.type);
-      console.error("  Min wire version:", server.minWireVersion);
-      console.error("  Max wire version:", server.maxWireVersion);
+mongoose.connection.on("error", (error) => {
+  console.error(
+    "🔴 Mongoose connection event error:",
+    error.message
+  );
+});
 
-      if (server.error) {
-        console.error("  Error name:", server.error.name);
-        console.error("  Error message:", server.error.message);
-        console.error("  Error code:", server.error.code);
-        console.error("  Error codeName:", server.error.codeName);
-      } else {
-        console.error("  Error: none reported");
-      }
-    }
-  }
 
-  console.error("--------------------------------------");
-};
+/* =========================================================
+   CONNECT DATABASE
+========================================================= */
 
 const connectDB = async () => {
-  const configuredUri = process.env.MONGODB_URI;
+  const uri = process.env.MONGODB_URI;
 
-  // Startup diagnostics
-  console.log("========================================");
-  console.log("MongoDB startup diagnostics");
-  console.log("========================================");
-  console.log("NODE_ENV:", process.env.NODE_ENV || "<not set>");
-  console.log("MONGODB_URI exists:", Boolean(configuredUri));
-
-  if (!configuredUri) {
-    throw new Error("MONGODB_URI is not configured");
+  if (!uri) {
+    throw new Error(
+      "MONGODB_URI environment variable is not configured"
+    );
   }
 
+
+  /* -----------------------------------------------
+     ALREADY CONNECTED
+  ------------------------------------------------ */
+
+  if (mongoose.connection.readyState === 1) {
+    console.log(
+      "MongoDB already connected."
+    );
+
+    return mongoose.connection;
+  }
+
+
+  /* -----------------------------------------------
+     CONNECTION ALREADY IN PROGRESS
+  ------------------------------------------------ */
+
+  if (connectionPromise) {
+    console.log(
+      "MongoDB connection already in progress..."
+    );
+
+    return connectionPromise;
+  }
+
+
+  /* -----------------------------------------------
+     START DIAGNOSTICS
+  ------------------------------------------------ */
+
+  console.log("");
+  console.log(
+    "========================================"
+  );
+  console.log(
+    "MONGODB CONNECTION STARTING"
+  );
+  console.log(
+    "========================================"
+  );
+
+  console.log(
+    "NODE_ENV:",
+    process.env.NODE_ENV || "development"
+  );
+
+  console.log(
+    "MONGODB_URI exists:",
+    Boolean(uri)
+  );
+
+  console.log(
+    "MongoDB target:",
+    redactMongoUri(uri)
+  );
+
   try {
-    const parsed = new URL(configuredUri);
-    console.log("MongoDB hostname:", parsed.hostname);
+    const parsed = new URL(uri);
+
+    console.log(
+      "MongoDB hostname:",
+      parsed.hostname
+    );
+
+    console.log(
+      "MongoDB database:",
+      parsed.pathname.replace("/", "") || "default"
+    );
+
   } catch {
-    console.log("MongoDB hostname: <invalid URI>");
+    console.warn(
+      "⚠️ MongoDB URI could not be parsed for diagnostics."
+    );
   }
 
   console.log(
-    "MONGODB_URI format:",
-    configuredUri.startsWith("mongodb+srv://")
-      ? "mongodb+srv://"
-      : configuredUri.startsWith("mongodb://")
-      ? "mongodb://"
-      : "unknown"
+    "========================================"
   );
 
-  console.log("MongoDB target:", redactMongoUri(configuredUri));
-  console.log("========================================");
+
+  /* -----------------------------------------------
+     DNS TEST
+  ------------------------------------------------ */
+
+  await testMongoDNS(uri);
+
+
+  /* -----------------------------------------------
+     CREATE CONNECTION
+  ------------------------------------------------ */
+
+  connectionPromise = mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
+
+    // Prevent mongoose from waiting forever
+    bufferCommands: false,
+  });
+
 
   try {
-    const parsed = new URL(configuredUri);
-    if (parsed.protocol === "mongodb+srv:") {
-      await testMongoDNS(configuredUri);
-    }
+    const connection = await connectionPromise;
+
+    console.log("");
+    console.log(
+      "========================================"
+    );
+    console.log(
+      "✅ MONGODB CONNECTED SUCCESSFULLY"
+    );
+    console.log(
+      "========================================"
+    );
+
+    console.log(
+      "Connected host:",
+      connection.connection.host
+    );
+
+    console.log(
+      "Connected database:",
+      connection.connection.name
+    );
+
+    console.log(
+      "========================================"
+    );
+    console.log("");
+
+    return connection;
+
   } catch (error) {
-    console.error("MongoDB URI parsing failed:", error?.message || error);
-  }
 
-  try {
-    console.log("========================================");
-    console.log("Connecting to MongoDB Atlas...");
-    console.log("========================================");
+    console.error("");
+    console.error(
+      "========================================"
+    );
+    console.error(
+      "❌ MONGODB CONNECTION FAILED"
+    );
+    console.error(
+      "========================================"
+    );
 
-    await mongoose.connect(configuredUri, {
-      serverSelectionTimeoutMS: 10000,
-      connectTimeoutMS: 10000,
-    });
+    console.error(
+      "Error name:",
+      error?.name
+    );
 
-    console.log("========================================");
-    console.log("✅ MongoDB connected successfully");
-    console.log("MongoDB target:", redactMongoUri(configuredUri));
-    console.log("========================================");
+    console.error(
+      "Error message:",
+      error?.message
+    );
 
-    return true;
-  } catch (error) {
-    console.error("========================================");
-    console.error("❌ MONGODB CONNECTION FAILED");
-    console.error("Error name:", error?.name);
-    console.error("Error message:", error?.message);
-    console.error("Error code:", error?.code);
-    console.error("Error codeName:", error?.codeName);
+    console.error(
+      "Error code:",
+      error?.code
+    );
 
-    if (error?.cause) {
-      console.error("Error cause:", error.cause);
-    }
+    console.error(
+      "Error cause:",
+      error?.cause?.message ||
+        error?.cause ||
+        "none"
+    );
 
-    logTopologyDetails(error);
-    console.error("MongoDB target:", redactMongoUri(configuredUri));
-    console.error("========================================");
+    console.error(
+      "MongoDB target:",
+      redactMongoUri(uri)
+    );
+
+    console.error(
+      "========================================"
+    );
+    console.error("");
+
+    // Allow a future retry
+    connectionPromise = null;
 
     throw error;
   }
 };
+
+
+/* =========================================================
+   EXPORT
+========================================================= */
 
 export default connectDB;

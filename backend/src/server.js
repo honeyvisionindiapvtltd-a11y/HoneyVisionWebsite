@@ -6,6 +6,7 @@ import { seedInitialProductsIfEmpty } from "./utils/seedProducts.js";
 const PORT = Number(process.env.PORT) || 5000;
 
 let mongoDBConnected = false;
+let isConnecting = false;
 
 /* =========================================================
    STARTUP DIAGNOSTICS
@@ -31,9 +32,7 @@ const printStartupDiagnostics = () => {
 
   if (process.env.MONGODB_URI) {
     try {
-      const parsed = new URL(
-        process.env.MONGODB_URI
-      );
+      const parsed = new URL(process.env.MONGODB_URI);
 
       console.log(
         "MongoDB hostname:",
@@ -42,12 +41,11 @@ const printStartupDiagnostics = () => {
 
       console.log(
         "MongoDB database:",
-        parsed.pathname.replace("/", "") ||
-          "default"
+        parsed.pathname.replace("/", "") || "default"
       );
     } catch {
       console.log(
-        "MongoDB URI: <invalid format>"
+        "MongoDB URI format could not be parsed."
       );
     }
   }
@@ -56,99 +54,91 @@ const printStartupDiagnostics = () => {
   console.log("");
 };
 
+
 /* =========================================================
-   MONGODB CONNECTION
+   MONGODB CONNECTION WITH RETRY
 ========================================================= */
 
-const connectToMongoDB = async (
-  attempt = 1,
-  maxAttempts = 10
-) => {
-  if (mongoDBConnected) {
-    return true;
+const connectToMongoDB = async () => {
+  if (mongoDBConnected || isConnecting) {
+    return mongoDBConnected;
   }
 
-  try {
-    const isProduction =
-      process.env.NODE_ENV === "production";
+  isConnecting = true;
 
-    console.log(
-      `[MongoDB] Connection attempt ${attempt}/${maxAttempts}...`
-    );
+  let attempt = 1;
 
-    await connectDB();
-
-    mongoDBConnected = true;
-
-    console.log(
-      "✅ MongoDB connected successfully"
-    );
-
-    /*
-      Seed products only after MongoDB connects.
-    */
+  while (!mongoDBConnected) {
     try {
-      await seedInitialProductsIfEmpty();
-
       console.log(
-        "✅ Initial product check completed"
+        `[MongoDB] Connection attempt ${attempt}...`
       );
-    } catch (seedError) {
-      console.warn(
-        "⚠️ Product seeding skipped:",
-        seedError.message
+
+      await connectDB();
+
+      mongoDBConnected = true;
+      isConnecting = false;
+
+      console.log("");
+      console.log(
+        "========================================"
       );
-    }
+      console.log(
+        "✅ MONGODB CONNECTED SUCCESSFULLY"
+      );
+      console.log(
+        "========================================"
+      );
+      console.log("");
 
-    return true;
-  } catch (error) {
-    const isProduction =
-      process.env.NODE_ENV === "production";
+      try {
+        await seedInitialProductsIfEmpty();
 
-    if (!isProduction) {
+        console.log(
+          "✅ Initial product check completed"
+        );
+      } catch (seedError) {
+        console.warn(
+          "⚠️ Product seeding skipped:",
+          seedError.message
+        );
+      }
+
+      return true;
+
+    } catch (error) {
+      mongoDBConnected = false;
+
       console.error(
-        `❌ MongoDB connection attempt ${attempt} failed:`,
-        error.message
+        `❌ MongoDB connection attempt ${attempt} failed:`
       );
-    } else if (
-      attempt === 1 ||
-      attempt % 3 === 0
-    ) {
-      console.error(
-        `❌ MongoDB attempt ${attempt}/${maxAttempts} failed:`,
-        error.message
-      );
-    }
 
-    if (attempt < maxAttempts) {
+      console.error(
+        error.message || error
+      );
+
       const delayMs = Math.min(
         5000 * attempt,
         30000
       );
 
       console.log(
-        `MongoDB retrying in ${delayMs / 1000}s...`
+        `⏳ Retrying MongoDB connection in ${delayMs / 1000} seconds...`
       );
 
-      setTimeout(() => {
-        connectToMongoDB(
-          attempt + 1,
-          maxAttempts
-        );
-      }, delayMs);
-    } else {
-      console.error(
-        `❌ MongoDB: Max connection attempts (${maxAttempts}) reached.`
+      await new Promise((resolve) =>
+        setTimeout(resolve, delayMs)
       );
 
-      console.error(
-        "MongoDB will continue retrying in the background."
-      );
+      attempt += 1;
     }
-
-    return false;
   }
+
+  isConnecting = false;
+
+  return false;
 };
+
 
 /* =========================================================
    START SERVER
@@ -160,8 +150,24 @@ const startServer = async () => {
 
     /*
       IMPORTANT:
-      Use exactly process.env.PORT on Render/GoDaddy.
+      Try MongoDB first.
+
+      The HTTP server will still start if MongoDB
+      temporarily fails, but MongoDB will keep retrying.
     */
+
+    connectToMongoDB().catch((error) => {
+      console.error(
+        "❌ MongoDB background connection error:",
+        error
+      );
+    });
+
+
+    /* =====================================================
+       START HTTP SERVER
+    ===================================================== */
+
     const server = app.listen(
       PORT,
       "0.0.0.0",
@@ -190,15 +196,20 @@ const startServer = async () => {
         );
 
         console.log(
-          "MongoDB connection running in background..."
+          "MongoDB connection status:",
+          mongoDBConnected
+            ? "CONNECTED"
+            : "CONNECTING..."
         );
 
         console.log(
           "========================================"
         );
+
         console.log("");
       }
     );
+
 
     /* =====================================================
        SERVER ERROR
@@ -213,11 +224,13 @@ const startServer = async () => {
       process.exit(1);
     });
 
+
     /* =====================================================
        GRACEFUL SHUTDOWN
     ===================================================== */
 
-    const shutdown = (signal) => {
+    const shutdown = async (signal) => {
+      console.log("");
       console.log(
         `${signal} received, shutting down gracefully...`
       );
@@ -241,12 +254,6 @@ const startServer = async () => {
       () => shutdown("SIGINT")
     );
 
-    /* =====================================================
-       DATABASE CONNECTION
-    ===================================================== */
-
-    connectToMongoDB();
-
   } catch (error) {
     console.error(
       "❌ Failed to start server:",
@@ -256,6 +263,7 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
 
 /* =========================================================
    UNHANDLED ERRORS
@@ -282,6 +290,7 @@ process.on(
     process.exit(1);
   }
 );
+
 
 /* =========================================================
    START APPLICATION
