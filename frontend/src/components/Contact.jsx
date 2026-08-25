@@ -152,8 +152,8 @@ const Contact = () => {
                     </h4>
 
                     <p className="text-gray-300 mt-2">
-                       <a href="mailto:contact.honeyvision@gmail.com" className="block text-gray-400 hover:text-[#24A8E0] transition">
-                contact.honeyvision@gmail.com
+                       <a href="mailto:contact@honeyvision.in" className="block text-gray-400 hover:text-[#24A8E0] transition">
+                contact@honeyvision.in
               </a>
                     </p>
                   </div>
