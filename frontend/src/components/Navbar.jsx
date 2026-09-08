@@ -128,7 +128,7 @@ const Navbar = () => {
               <span className="text-[#F1CF45]">Vision</span>
             </h1>
 
-            <p className="text-[10px] sm:text-xs tracking-[2px] sm:tracking-[3px] uppercase text-[#24A8E0]">
+            <p className="text-[10px] sm:text-xs tracking-[2px] sm:tracking-[3px] uppercase text-[#F1CF45]">
               India PVT. LTD.
             </p>
           </div>
