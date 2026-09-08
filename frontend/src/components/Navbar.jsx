@@ -11,7 +11,7 @@ import {
 
 import { getCloudinaryImageUrl } from "../utils/cloudinary";
 
-const logo = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1785387607/logo_xhoudq.png");
+const logo = getCloudinaryImageUrl("https://res.cloudinary.com/q6iqvtbe/image/upload/v1788841369/logo1_jvwzwz.png");
 
 const Navbar = () => {
   const navigate = useNavigate();
